@@ -1,0 +1,38 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+import express, { Application } from 'express'
+const CORS = require('cors')
+const app: Application = express()
+
+const adminRouter = require('./routes/admin')
+const userRouter = require('./routes/user')
+
+const cookieParser = require('cookie-parser')
+const mongoose = require('mongoose')
+
+app.use(express.json())
+app.use(cookieParser())
+
+app.use(CORS({
+  origin: ['http://localhost:3000'],
+  methods: ['GET', 'POST'],
+  credentials: true,
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
+}
+))
+
+mongoose.connect(process.env.MONGODB
+).then(() => {
+  console.log('mongodb connected')
+}).catch((error: object) => {
+  console.log(error)
+})
+
+app.use('/', userRouter)
+app.use('/admin', adminRouter)
+
+const port: Number = 3008
+
+app.listen(port, () => {
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  console.log(`connected port ${port}`)
+})
