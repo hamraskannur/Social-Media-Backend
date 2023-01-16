@@ -10,7 +10,7 @@ const app = (0, express_1.default)();
 const adminRouter = require('./routes/admin');
 const userRouter = require('./routes/user');
 const cookieParser = require('cookie-parser');
-const mongoose = require('mongoose');
+const dbConnect = require('./config/connects');
 app.use(express_1.default.json());
 app.use(cookieParser());
 app.use(CORS({
@@ -19,11 +19,7 @@ app.use(CORS({
     credentials: true,
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 }));
-mongoose.connect(process.env.MONGODB).then(() => {
-    console.log('mongodb connected');
-}).catch((error) => {
-    console.log(error);
-});
+dbConnect;
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
 const port = 3008;

@@ -29,7 +29,7 @@ exports.default = {
         if (Admin.length > 0) {
             const passwordVerify = yield bcrypt.compare(password, (_a = Admin[0]) === null || _a === void 0 ? void 0 : _a.password);
             if (passwordVerify) {
-                const token = yield (0, jws_1.generateToken)({ id: (_b = Admin[0]) === null || _b === void 0 ? void 0 : _b._id.toString() }, '30m');
+                const token = yield (0, jws_1.generateToken)({ id: (_b = Admin[0]) === null || _b === void 0 ? void 0 : _b._id.toString() });
                 userSignUpp.Status = true;
                 userSignUpp.token = token;
                 res.status(200).send({ userSignUpp });
@@ -52,8 +52,6 @@ exports.default = {
     }),
     changeStatus: (req, res) => {
         const { Status, userId } = req.params;
-        console.log(Status);
-        console.log("kokokok");
         void userSchema_1.default.updateOne({ _id: userId }, {
             $set: {
                 status: Status

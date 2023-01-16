@@ -5,9 +5,6 @@ const crypto = require('crypto')
 import { sendEmail } from './sentEmail'
 
 export const  nodemailer = async(id: string, email: string) => {
-  console.log("koko");
-   console.log(email);
-   console.log(id);
    
   const userToken = await new Token({
     userId: id,

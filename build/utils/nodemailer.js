@@ -19,9 +19,6 @@ const token_1 = __importDefault(require("../models/token"));
 const crypto = require('crypto');
 const sentEmail_1 = require("./sentEmail");
 const nodemailer = (id, email) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("koko");
-    console.log(email);
-    console.log(id);
     const userToken = yield new token_1.default({
         userId: id,
         token: crypto.randomBytes(32).toString('hex')

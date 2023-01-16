@@ -7,7 +7,7 @@ const adminRouter = require('./routes/admin')
 const userRouter = require('./routes/user')
 
 const cookieParser = require('cookie-parser')
-const mongoose = require('mongoose')
+const dbConnect=require('./config/connects')
 
 app.use(express.json())
 app.use(cookieParser())
@@ -20,17 +20,12 @@ app.use(CORS({
 }
 ))
 
-mongoose.connect(process.env.MONGODB
-).then(() => {
-  console.log('mongodb connected')
-}).catch((error: object) => {
-  console.log(error)
-})
+dbConnect;
 
 app.use('/', userRouter)
 app.use('/admin', adminRouter)
 
-const port: Number = 3008
+const port = 3008
 
 app.listen(port, () => {
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

@@ -16,7 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const generateToken = (payload, expired) => __awaiter(void 0, void 0, void 0, function* () {
+const generateToken = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return jsonwebtoken_1.default.sign(payload, process.env.SECRET_TOKEN, {
         expiresIn: '1d'
     });

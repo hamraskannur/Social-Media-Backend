@@ -9,11 +9,11 @@ import postCollection from "../models/postSchema";
 import commentCollection from "../models/CommentSchema";
 import token from "../models/token";
 import { nodemailer } from "../utils/nodemailer";
-const saltRounds: number = 10;
+const saltRounds = 10;
 
 export default {
   postSignup: async (req: Request, res: Response, next: NextFunction) => {
-    const userSignup: { Status: Boolean; message: string } = {
+    const userSignup: { Status: boolean; message: string } = {
       Status: false,
       message: "",
     };
@@ -61,7 +61,7 @@ export default {
   },
 
   verify: async (req: Request, res: Response) => {
-    const Verify: { Status: Boolean; message: string } = {
+    const Verify: { Status: boolean; message: string } = {
       Status: false,
       message: "",
     };
@@ -99,7 +99,7 @@ export default {
   userLogin: async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const userLogin: {
-      Status: Boolean;
+      Status: boolean;
       message: string;
       name: string;
       token: string;
@@ -122,7 +122,6 @@ export default {
         if (passwordVerify) {
           const token = await generateToken(
             { id: findUser[0]?._id.toString() },
-            "30m"
           );
           userLogin.token = token;
           userLogin.name = findUser[0].username;
@@ -188,7 +187,7 @@ export default {
   },
   googleLogin: async (req: Request, res: Response) => {
     const userLogin: {
-      Status: Boolean;
+      Status: boolean;
       message: string;
       name: string;
       token: string;
@@ -211,14 +210,14 @@ export default {
         username: name,
       }).save();
       console.log(user);
-      const token = await generateToken({ id: user._id.toString() }, "30m");
+      const token = await generateToken({ id: user._id.toString() });
       userLogin.token = token;
       userLogin.name = user.username;
       userLogin.id = user._id;
       userLogin.Status = true;
       res.status(200).send({ userLogin });
     } else {
-      const token = await generateToken({ id: user[0]._id.toString() }, "30m");
+      const token = await generateToken({ id: user[0]._id.toString() });
       userLogin.token = token;
       userLogin.name = user[0].username;
       userLogin.id = user[0]._id;

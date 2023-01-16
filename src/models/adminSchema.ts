@@ -3,7 +3,7 @@ import { model, Schema, Document } from 'mongoose'
 interface token extends Document {
   name: string
   email: string
-  password: String
+  password: string
 }
 const adminSchema: Schema = new Schema({
   name: {

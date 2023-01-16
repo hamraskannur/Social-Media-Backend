@@ -7,13 +7,14 @@ interface IUser extends Document {
   dob: Date
   phoneNo: number
   password: string
-  verified: Boolean
-  status:Boolean
-  place:string
+  verified: boolean
+  status:boolean
+  city:string
   country:string
   description:string
   img:string
   public:string
+  PostalCode:number
 }
 const userSchema: Schema = new Schema({
   username: {
@@ -45,7 +46,7 @@ const userSchema: Schema = new Schema({
     type: Boolean,
     default: false
   },
-  place:{
+  city:{
     type:String
   },
   country:{
@@ -54,10 +55,13 @@ const userSchema: Schema = new Schema({
   img:{
     type:String
     },
-    public:{
-      type:Boolean
+  public:{
+    type:Boolean
 
-    }
+  },PostalCode:{
+    type:Number
+  }
+
 })
 
 export default model<IUser>('user', userSchema)

@@ -114,7 +114,7 @@ exports.default = {
             if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
                 const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
                 if (passwordVerify) {
-                    const token = yield (0, jws_1.generateToken)({ id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString() }, "30m");
+                    const token = yield (0, jws_1.generateToken)({ id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString() });
                     userLogin.token = token;
                     userLogin.name = findUser[0].username;
                     userLogin.id = findUser[0]._id;
@@ -195,7 +195,7 @@ exports.default = {
                 username: name,
             }).save();
             console.log(user);
-            const token = yield (0, jws_1.generateToken)({ id: user._id.toString() }, "30m");
+            const token = yield (0, jws_1.generateToken)({ id: user._id.toString() });
             userLogin.token = token;
             userLogin.name = user.username;
             userLogin.id = user._id;
@@ -203,7 +203,7 @@ exports.default = {
             res.status(200).send({ userLogin });
         }
         else {
-            const token = yield (0, jws_1.generateToken)({ id: user[0]._id.toString() }, "30m");
+            const token = yield (0, jws_1.generateToken)({ id: user[0]._id.toString() });
             userLogin.token = token;
             userLogin.name = user[0].username;
             userLogin.id = user[0]._id;

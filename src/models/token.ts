@@ -2,7 +2,7 @@ import { model, Schema, Document, Date } from 'mongoose'
 
 interface token extends Document {
   userId: string
-  token: String
+  token: string
 }
 const tokenSchema: Schema = new Schema({
   userId: {

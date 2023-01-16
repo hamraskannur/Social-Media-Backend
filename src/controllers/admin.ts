@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt')
 
 export default {
   adminLogin: async (req: Request, res: Response) => {
-    const userSignUpp: { Status: Boolean, message: string, token: string } = {
+    const userSignUpp: { Status: boolean, message: string, token: string } = {
       Status: false,
       message: '',
       token: ''
@@ -24,7 +24,7 @@ export default {
         Admin[0]?.password
       )
       if (passwordVerify) {
-        const token = await generateToken({ id: Admin[0]?._id.toString() }, '30m')
+        const token = await generateToken({ id: Admin[0]?._id.toString() })
         userSignUpp.Status = true
         userSignUpp.token = token
 
@@ -46,8 +46,7 @@ export default {
   },
   changeStatus: (req: Request, res: Response) => {
     const { Status, userId } = req.params
-    console.log(Status)
-    console.log("kokokok");
+
     
     void userCollection.updateOne({ _id: userId }, {
       $set: {
