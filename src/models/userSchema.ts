@@ -12,9 +12,14 @@ interface IUser extends Document {
   city:string
   country:string
   description:string
-  img:string
+  ProfileImg:string
+  coverImg:string
   public:string
   PostalCode:number
+  Requests: string[];
+  Followers: string[];
+  Following: string[];
+
 }
 const userSchema: Schema = new Schema({
   username: {
@@ -52,15 +57,31 @@ const userSchema: Schema = new Schema({
   country:{
     type:String
   },
-  img:{
+  ProfileImg:{
     type:String
     },
+  coverImg:{
+    type:String
+  },
   public:{
     type:Boolean
 
   },PostalCode:{
     type:Number
-  }
+  },
+  Requests:[{
+    type: Schema.Types.ObjectId,
+    ref:"user"
+  }],
+  Followers:[{
+    type: Schema.Types.ObjectId,
+    ref:"user"
+  }],
+  Following:[{
+    type: Schema.Types.ObjectId,
+    ref:"user"
+  }]
+
 
 })
 

@@ -114,7 +114,9 @@ exports.default = {
             if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
                 const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
                 if (passwordVerify) {
-                    const token = yield (0, jws_1.generateToken)({ id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString() });
+                    const token = yield (0, jws_1.generateToken)({
+                        id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString(),
+                    });
                     userLogin.token = token;
                     userLogin.name = findUser[0].username;
                     userLogin.id = findUser[0]._id;
@@ -162,7 +164,8 @@ exports.default = {
     }),
     getMyProfile: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.body.userId;
-        const useData = yield postSchema_1.default.find({ userId: userId })
+        const useData = yield postSchema_1.default
+            .find({ userId: userId })
             .populate("userId");
         res.status(201).json({ useData });
     }),
@@ -194,7 +197,6 @@ exports.default = {
                 email: email,
                 username: name,
             }).save();
-            console.log(user);
             const token = yield (0, jws_1.generateToken)({ id: user._id.toString() });
             userLogin.token = token;
             userLogin.name = user.username;
@@ -246,7 +248,6 @@ exports.default = {
                 path: "userId",
                 select: { username: 1 },
             });
-            console.log(postComment, "post comment after populate");
             res.json({
                 message: "commented posted successfully",
                 success: true,
@@ -305,8 +306,6 @@ exports.default = {
                 },
             },
         ]);
-        console.log("comments");
-        console.log(comments);
         return res.json({
             message: "comments fetched successfully",
             comments: comments,
@@ -324,12 +323,184 @@ exports.default = {
     }),
     getUserAllPost: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.params.userId;
-        const AllPosts = yield postSchema_1.default.find({ userId: userId }).populate("userId");
-        console.log(AllPosts);
+        const AllPosts = yield postSchema_1.default
+            .find({ userId: userId })
+            .populate("userId");
         res.json({
             message: "AllPosts fetched successfully",
             AllPosts: AllPosts,
             success: true,
         });
+    }),
+    updateUserData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _d;
+        const userId = req.body.userId;
+        const user = yield userSchema_1.default.find({ username: req.body.userName });
+        if (user.length === 0 || ((_d = user[0]) === null || _d === void 0 ? void 0 : _d._id) === userId) {
+            userSchema_1.default.updateOne({ _id: userId }, {
+                $set: {
+                    username: req.body.username,
+                    name: req.body.name,
+                    phoneNo: req.body.phoneNo,
+                    dob: req.body.dob,
+                    country: req.body.country,
+                    description: req.body.description,
+                    city: req.body.city,
+                    PostalCode: req.body.PostalCode,
+                    ProfileImg: req.body.ProfileImg,
+                    coverImg: req.body.coverImg,
+                },
+            }).then((data) => {
+                if (data) {
+                    if (data.modifiedCount > 0) {
+                        return res.json({
+                            message: "user data updated successfully",
+                            success: true,
+                        });
+                    }
+                    else {
+                        return res.json({
+                            message: "",
+                            success: "noUpdates",
+                        });
+                    }
+                }
+                else {
+                    return res.json({
+                        message: "something is wrong",
+                        success: false,
+                    });
+                }
+            });
+        }
+        else {
+            return res.json({
+                message: "userName Exist",
+                success: false,
+            });
+        }
+    }),
+    followUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _e, _f, _g;
+        const userId = req.body.userId;
+        const followUserId = req.body.followId;
+        const user = yield userSchema_1.default.findById(followUserId);
+        const mainUser = yield userSchema_1.default.findById(userId);
+        if (!user)
+            res.json({ message: "no user", success: false });
+        if (!mainUser)
+            res.json({ message: "no user", success: false });
+        if (user === null || user === void 0 ? void 0 : user.public) {
+            if (!((_e = user === null || user === void 0 ? void 0 : user.Followers) === null || _e === void 0 ? void 0 : _e.includes(userId))) {
+                yield user.updateOne({ $push: { Followers: userId } });
+                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: userId } }));
+                res.json({ message: "successfully followed user", success: true });
+            }
+            else {
+                yield user.updateOne({ $pull: { Followers: userId } });
+                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
+                res.json({ message: "successfully unFollowed user", success: true });
+            }
+        }
+        else {
+            if ((_f = user === null || user === void 0 ? void 0 : user.Followers) === null || _f === void 0 ? void 0 : _f.includes(userId)) {
+                yield user.updateOne({ $pull: { Followers: userId } });
+                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
+                res.json({ message: "successfully unFollowed user", success: true });
+            }
+            else {
+                if (!((_g = user === null || user === void 0 ? void 0 : user.Requests) === null || _g === void 0 ? void 0 : _g.includes(userId))) {
+                    yield (user === null || user === void 0 ? void 0 : user.updateOne({ $push: { Requests: userId } }));
+                    res.json({ message: "successfully Requested user", success: true });
+                }
+                else {
+                    yield user.updateOne({ $pull: { Requests: userId } });
+                    res.json({ message: "successfully unRequested user", success: true });
+                }
+            }
+        }
+    }),
+    checkUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const userId = req.body.userId;
+        const user = yield userSchema_1.default.findById(userId);
+        if (!user)
+            res.json({ message: "no user", success: false });
+        if (user === null || user === void 0 ? void 0 : user.public) {
+            res.json({ message: "user Account public", success: true });
+        }
+        else {
+            res.json({ message: "user Account private", success: false });
+        }
+    }),
+    getAllRequest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const userId = req.body.userId;
+        const Request = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(userId),
+                },
+            },
+            {
+                $project: {
+                    Requests: 1,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Requests",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "Requests",
+                    foreignField: "_id",
+                    as: "Requests",
+                },
+            },
+        ]);
+        res.json({ message: "get All Request", Request: Request, success: false });
+    }),
+    acceptRequest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _h;
+        const userId = req.body.userId;
+        const acceptId = req.body.acceptId;
+        const user = yield userSchema_1.default.findById(userId);
+        const acceptUserId = yield userSchema_1.default.findById(acceptId);
+        if (!acceptUserId)
+            res.json({ message: "no user", success: false });
+        if (!user)
+            res.json({ message: "no user", success: false });
+        if ((_h = user === null || user === void 0 ? void 0 : user.Requests) === null || _h === void 0 ? void 0 : _h.includes(acceptId)) {
+            yield user.updateOne({ $pull: { Requests: acceptId } });
+            yield user.updateOne({ $push: { Followers: acceptId } });
+            yield (acceptUserId === null || acceptUserId === void 0 ? void 0 : acceptUserId.updateOne({ $push: { Following: acceptId } }));
+        }
+        res.json({ message: "success accepted user ", success: true });
+    }),
+    requestsCount: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _j;
+        const userId = req.body.userId;
+        const userData = yield userSchema_1.default.findOne({ _id: userId });
+        if (!userData)
+            res.json({ message: "no user", success: false });
+        const count = (_j = userData === null || userData === void 0 ? void 0 : userData.Requests) === null || _j === void 0 ? void 0 : _j.length;
+        console.log(count);
+        res.json({ message: "success accepted user ", count: count, success: true });
+    }),
+    deleteRequests: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _k;
+        const userId = req.body.userId;
+        const deleteId = req.params.deleteId;
+        const user = yield userSchema_1.default.findById(userId);
+        if (!user)
+            res.json({ message: "no user", success: false });
+        if ((_k = user === null || user === void 0 ? void 0 : user.Requests) === null || _k === void 0 ? void 0 : _k.includes(deleteId)) {
+            yield user.updateOne({ $pull: { Requests: deleteId } });
+            res.json({ message: "success delete request ", success: true });
+        }
+        else {
+            res.json({ message: "something is wrong ", success: false });
+        }
     })
 };

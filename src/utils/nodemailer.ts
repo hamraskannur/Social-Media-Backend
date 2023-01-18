@@ -12,7 +12,7 @@ export const  nodemailer = async(id: string, email: string) => {
   }).save()
      console.log(userToken.token);
      
-  const url = `${process.env.BASE_URL}verify/${id}/${userToken.token}`
+  const url = `${process.env.BASE_URL}user/verify/${id}/${userToken.token}`
 
   sendEmail(email, 'verify Email', url)
 }

@@ -34,4 +34,18 @@ router.get('/getUserData' ,authMiddleware,controllers.getUserData)
 
 router.get('/getUserAllPost/:userId', authMiddleware,controllers.getUserAllPost)
 
+router.put('/updateUserData', authMiddleware,controllers.updateUserData)
+
+router.put('/followUser' ,authMiddleware,controllers.followUser)
+
+router.get('/checkUser' , authMiddleware,controllers.checkUser)
+
+router.get('/getAllRequest', authMiddleware,controllers.getAllRequest)
+
+router.put('/acceptRequest', authMiddleware,controllers.acceptRequest)
+
+router.get('/requestsCount', authMiddleware,controllers.requestsCount)
+
+router.delete('/deleteRequests/:deleteId', authMiddleware,controllers.deleteRequests)
+
 module.exports = router

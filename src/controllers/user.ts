@@ -111,79 +111,106 @@ export default {
       token: "",
       id: "",
     };
-
-    const findUser = await UserCollection.find({ email });
-    if (findUser.length !== 0) {
-      if (findUser[0]?.verified === true) {
-        const passwordVerify: boolean = await bcrypt.compare(
-          password,
-          findUser[0].password
-        );
-        if (passwordVerify) {
-          const token = await generateToken(
-            { id: findUser[0]?._id.toString() },
+    try {
+      const findUser = await UserCollection.find({ email });
+      if (findUser.length !== 0) {
+        if (findUser[0]?.verified === true) {
+          const passwordVerify: boolean = await bcrypt.compare(
+            password,
+            findUser[0].password
           );
-          userLogin.token = token;
-          userLogin.name = findUser[0].username;
-          userLogin.id = findUser[0]._id;
-          userLogin.Status = true;
+          if (passwordVerify) {
+            const token = await generateToken({
+              id: findUser[0]?._id.toString(),
+            });
+            userLogin.token = token;
+            userLogin.name = findUser[0].username;
+            userLogin.id = findUser[0]._id;
+            userLogin.Status = true;
 
-          if (!findUser[0]?.status) {
-            res.status(200).send({ userLogin });
+            if (!findUser[0]?.status) {
+              res.status(200).send({ userLogin });
+            } else {
+              userLogin.message = "Admin blocked please sent email from admin";
+              userLogin.Status = false;
+              res.send({ userLogin });
+            }
           } else {
-            userLogin.message = "Admin blocked please sent email from admin";
+            userLogin.message = " Password is wrong";
             userLogin.Status = false;
             res.send({ userLogin });
           }
         } else {
-          userLogin.message = " Password is wrong";
+          userLogin.message = "your signup not complete";
           userLogin.Status = false;
           res.send({ userLogin });
         }
       } else {
-        userLogin.message = "your signup not complete";
+        userLogin.message = "wrong Email";
         userLogin.Status = false;
         res.send({ userLogin });
       }
-    } else {
-      userLogin.message = "wrong Email";
-      userLogin.Status = false;
-      res.send({ userLogin });
+    } catch (error) {
+      console.log(error);
     }
   },
   addPost: async (req: Request, res: Response) => {
-    const { imageLinks, description, userId } = req.body;
-    const post = await new postCollection({
-      userId,
-      img: imageLinks,
-      description,
-    }).save();
+    try {
+      const { imageLinks, description, userId } = req.body;
+      const post = await new postCollection({
+        userId,
+        img: imageLinks,
+        description,
+      }).save();
 
-    res.status(201).json({ status: true });
+      res.status(201).json({ status: true });
+    } catch (error) {
+      console.log(error);
+    }
   },
   getMyPost: async (req: Request, res: Response) => {
-    const userId = req.body.userId;
-    const allPost = await postCollection.find({ userId });
-    res.status(201).json({ status: true, allPost });
+    try {
+      const userId = req.body.userId;
+      const allPost = await postCollection.find({ userId });
+      res.status(201).json({ status: true, allPost });
+    } catch (error) {
+      console.log(error);
+    }
   },
   getMyProfile: async (req: Request, res: Response) => {
-    const userId = req.body.userId;
-    const useData = await postCollection.find({ userId: userId })
-      .populate("userId");
-      
+    try {
+      const userId = req.body.userId;
+      const useData = await postCollection
+        .find({ userId: userId })
+        .populate("userId");
+
       res.status(201).json({ useData });
+    } catch (error) {
+      console.log(error);
+    }
   },
+
   getAllPosts: async (req: Request, res: Response) => {
-    const AllPosts = await postCollection.find().populate("userId");
-    res.status(201).json({ AllPosts });
+    try {
+      const AllPosts = await postCollection.find().populate("userId");
+      res.status(201).json({ AllPosts });
+    } catch (error) {
+      console.log(error);
+    }
   },
+
   getOnePost: async (req: Request, res: Response) => {
     const { userId, PostId } = req.params;
   },
+
   getFriendsAccount: async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+    try {
+      const userId = req.params.userId;
       const FriendsAccount = await UserCollection.find({ _id: userId });
-    res.status(201).json({ FriendsAccount });
+      res.status(201).json({ FriendsAccount });
+    } catch (error) {
+      console.log(error);
+    }
   },
   googleLogin: async (req: Request, res: Response) => {
     const userLogin: {
@@ -199,46 +226,52 @@ export default {
       token: "",
       id: "",
     };
+    try {
+      const { email, name } = req.body;
 
-    const { email, name } = req.body;
-
-    const user = await UserCollection.find({ email });
-    if (user.length === 0) {
-      const user = await new UserCollection({
-        name: name,
-        email: email,
-        username: name,
-      }).save();
-      console.log(user);
-      const token = await generateToken({ id: user._id.toString() });
-      userLogin.token = token;
-      userLogin.name = user.username;
-      userLogin.id = user._id;
-      userLogin.Status = true;
-      res.status(200).send({ userLogin });
-    } else {
-      const token = await generateToken({ id: user[0]._id.toString() });
-      userLogin.token = token;
-      userLogin.name = user[0].username;
-      userLogin.id = user[0]._id;
-      userLogin.Status = true;
-      res.status(200).send({ userLogin });
+      const user = await UserCollection.find({ email });
+      if (user.length === 0) {
+        const user = await new UserCollection({
+          name: name,
+          email: email,
+          username: name,
+        }).save();
+        const token = await generateToken({ id: user._id.toString() });
+        userLogin.token = token;
+        userLogin.name = user.username;
+        userLogin.id = user._id;
+        userLogin.Status = true;
+        res.status(200).send({ userLogin });
+      } else {
+        const token = await generateToken({ id: user[0]._id.toString() });
+        userLogin.token = token;
+        userLogin.name = user[0].username;
+        userLogin.id = user[0]._id;
+        userLogin.Status = true;
+        res.status(200).send({ userLogin });
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
   likePostReq: async (req: Request, res: Response) => {
-    const userId = req.body.userId;
-    const postId = req.params.postId;
-    const post = await postCollection.findById(postId);
+    try {
+      const userId = req.body.userId;
+      const postId = req.params.postId;
+      const post = await postCollection.findById(postId);
 
-    if (!post) {
-      return res.json({ Message: "post not fount", success: false });
-    }
-    if (!post.likes.includes(userId)) {
-      await post.updateOne({ $push: { likes: userId } });
-      return res.json({ Message: "post liked successfully", success: true });
-    } else {
-      await post.updateOne({ $pull: { likes: userId } });
-      return res.json({ Message: "post liked successfully", success: true });
+      if (!post) {
+        return res.json({ Message: "post not fount", success: false });
+      }
+      if (!post.likes.includes(userId)) {
+        await post.updateOne({ $push: { likes: userId } });
+        return res.json({ Message: "post liked successfully", success: true });
+      } else {
+        await post.updateOne({ $pull: { likes: userId } });
+        return res.json({ Message: "post liked successfully", success: true });
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
 
@@ -262,93 +295,307 @@ export default {
         path: "userId",
         select: { username: 1 },
       });
-      console.log(postComment, "post comment after populate");
 
       res.json({
         message: "commented posted successfully",
         success: true,
         comment: postComment,
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   },
   getComment: async (req: Request, res: Response) => {
-    const postId = req.params.postId;
-    const comments = await commentCollection.aggregate([
-      {
-        $match: {
-          postId: new mongoose.Types.ObjectId(postId),
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "author",
-        },
-      },
-      {
-        $unwind: {
-          path: "$author",
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          userId: 1,
-          postId: 1,
-          comment: 1,
-          likes: 1,
-          createdAt: 1,
-          "author.username": 1,
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: ["$$ROOT", "$author"],
+    try {
+      const postId = req.params.postId;
+      const comments = await commentCollection.aggregate([
+        {
+          $match: {
+            postId: new mongoose.Types.ObjectId(postId),
           },
         },
-      },
-      {
-        $project: {
-          author: 0,
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "author",
+          },
         },
-      },
-      {
-        $sort: {
-          createdAt: -1,
+        {
+          $unwind: {
+            path: "$author",
+          },
         },
-      },
-    ]);
-    console.log("comments");
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            postId: 1,
+            comment: 1,
+            likes: 1,
+            createdAt: 1,
+            "author.username": 1,
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: ["$$ROOT", "$author"],
+            },
+          },
+        },
+        {
+          $project: {
+            author: 0,
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ]);
 
-    console.log(comments);
-    return res.json({
-      message: "comments fetched successfully",
-      comments: comments,
-      success: true,
-    });
+      return res.json({
+        message: "comments fetched successfully",
+        comments: comments,
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   getUserData: async (req: Request, res: Response) => {
-    const userId = req.body.userId;
-    const user = await UserCollection.find({ _id: userId });
-    return res.json({
-      message: "comments fetched successfully",
-      user: user,
-      success: true,
-    });
+    try {
+      const userId = req.body.userId;
+      const user = await UserCollection.find({ _id: userId });
+      return res.json({
+        message: "comments fetched successfully",
+        user: user,
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
 
-  getUserAllPost:async (req: Request, res: Response) => {
-    const userId = req.params.userId;
-  const AllPosts = await postCollection.find({ userId: userId }).populate("userId");
-  console.log(AllPosts);
-  
-  res.json({
-    message: "AllPosts fetched successfully",
-    AllPosts: AllPosts,
-    success: true,
-  });
-  }
+  getUserAllPost: async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.userId;
+      const AllPosts = await postCollection
+        .find({ userId: userId })
+        .populate("userId");
+
+      res.json({
+        message: "AllPosts fetched successfully",
+        AllPosts: AllPosts,
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  updateUserData: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const user = await UserCollection.find({ username: req.body.userName });
+      if (user.length === 0 || user[0]?._id === userId) {
+        UserCollection.updateOne(
+          { _id: userId },
+          {
+            $set: {
+              username: req.body.username,
+              name: req.body.name,
+              phoneNo: req.body.phoneNo,
+              dob: req.body.dob,
+              country: req.body.country,
+              description: req.body.description,
+              city: req.body.city,
+              PostalCode: req.body.PostalCode,
+              ProfileImg: req.body.ProfileImg,
+              coverImg: req.body.coverImg,
+            },
+          }
+        ).then((data) => {
+          if (data) {
+            if (data.modifiedCount > 0) {
+              return res.json({
+                message: "user data updated successfully",
+                success: true,
+              });
+            } else {
+              return res.json({
+                message: "",
+                success: "noUpdates",
+              });
+            }
+          } else {
+            return res.json({
+              message: "something is wrong",
+              success: false,
+            });
+          }
+        });
+      } else {
+        return res.json({
+          message: "userName Exist",
+          success: false,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  followUser: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const followUserId = req.body.followId;
+
+      const user = await UserCollection.findById(followUserId);
+      const mainUser = await UserCollection.findById(userId);
+
+      if (!user) res.json({ message: "no user", success: false });
+      if (!mainUser) res.json({ message: "no user", success: false });
+      if (user?.public) {
+        if (!user?.Followers?.includes(userId)) {
+          await user.updateOne({ $push: { Followers: userId } });
+          await mainUser?.updateOne({ $push: { Following: userId } });
+          res.json({ message: "successfully followed user", success: true });
+        } else {
+          await user.updateOne({ $pull: { Followers: userId } });
+          await mainUser?.updateOne({ $pull: { Following: userId } });
+          res.json({ message: "successfully unFollowed user", success: true });
+        }
+      } else {
+        if (user?.Followers?.includes(userId)) {
+          await user.updateOne({ $pull: { Followers: userId } });
+          await mainUser?.updateOne({ $pull: { Following: userId } });
+          res.json({ message: "successfully unFollowed user", success: true });
+        } else {
+          if (!user?.Requests?.includes(userId)) {
+            await user?.updateOne({ $push: { Requests: userId } });
+            res.json({ message: "successfully Requested user", success: true });
+          } else {
+            await user.updateOne({ $pull: { Requests: userId } });
+            res.json({
+              message: "successfully unRequested user",
+              success: true,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  checkUser: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const user = await UserCollection.findById(userId);
+      if (!user) res.json({ message: "no user", success: false });
+      if (user?.public) {
+        res.json({ message: "user Account public", success: true });
+      } else {
+        res.json({ message: "user Account private", success: false });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  getAllRequest: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+
+      const Request = await UserCollection.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(userId),
+          },
+        },
+        {
+          $project: {
+            Requests: 1,
+          },
+        },
+        {
+          $unwind: {
+            path: "$Requests",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "Requests",
+            foreignField: "_id",
+            as: "Requests",
+          },
+        },
+      ]);
+      res.json({
+        message: "get All Request",
+        Request: Request,
+        success: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  acceptRequest: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const acceptId = req.body.acceptId;
+
+      const user = await UserCollection.findById(userId);
+      const acceptUserId = await UserCollection.findById(acceptId);
+
+      if (!acceptUserId) res.json({ message: "no user", success: false });
+
+      if (!user) res.json({ message: "no user", success: false });
+      if (user?.Requests?.includes(acceptId)) {
+        await user.updateOne({ $pull: { Requests: acceptId } });
+        await user.updateOne({ $push: { Followers: acceptId } });
+        await acceptUserId?.updateOne({ $push: { Following: acceptId } });
+      }
+      res.json({ message: "success accepted user ", success: true });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  requestsCount: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const userData = await UserCollection.findOne({ _id: userId });
+      if (!userData) res.json({ message: "no user", success: false });
+
+      const count = userData?.Requests?.length;
+      console.log(count);
+
+      res.json({
+        message: "success accepted user ",
+        count: count,
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  deleteRequests: async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      const deleteId = req.params.deleteId;
+
+      const user = await UserCollection.findById(userId);
+      if (!user) res.json({ message: "no user", success: false });
+
+      if (user?.Requests?.includes(deleteId)) {
+        await user.updateOne({ $pull: { Requests: deleteId } });
+        res.json({ message: "success delete request ", success: true });
+      } else {
+        res.json({ message: "something is wrong ", success: false });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };

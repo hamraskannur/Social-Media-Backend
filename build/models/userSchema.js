@@ -31,17 +31,34 @@ const userSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false
     },
-    place: {
+    city: {
         type: String
     },
     country: {
         type: String
     },
-    img: {
+    ProfileImg: {
+        type: String
+    },
+    coverImg: {
         type: String
     },
     public: {
         type: Boolean
-    }
+    }, PostalCode: {
+        type: Number
+    },
+    Requests: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "user"
+        }],
+    Followers: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "user"
+        }],
+    Following: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "user"
+        }]
 });
 exports.default = (0, mongoose_1.model)('user', userSchema);
