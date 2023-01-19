@@ -38,14 +38,20 @@ router.put('/updateUserData', authMiddleware,controllers.updateUserData)
 
 router.put('/followUser' ,authMiddleware,controllers.followUser)
 
-router.get('/checkUser' , authMiddleware,controllers.checkUser)
-
 router.get('/getAllRequest', authMiddleware,controllers.getAllRequest)
 
 router.put('/acceptRequest', authMiddleware,controllers.acceptRequest)
 
-router.get('/requestsCount', authMiddleware,controllers.requestsCount)
-
 router.delete('/deleteRequests/:deleteId', authMiddleware,controllers.deleteRequests)
+
+router.post('/createChat', authMiddleware,controllers.createChat)
+
+router.get('/chat/:userId', authMiddleware,controllers.getChat)
+
+router.get('/chatFind/:firstId/:secondId', authMiddleware,controllers.chatFind)
+
+router.post('/addMessage',authMiddleware,controllers.addMessage)
+
+router.get('/getMessages/:chatId', authMiddleware,controllers.getMessages)
 
 module.exports = router

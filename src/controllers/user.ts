@@ -6,7 +6,9 @@ const bcrypt = require("bcrypt");
 import { generateToken } from "../utils/jws";
 import UserCollection from "../models/userSchema";
 import postCollection from "../models/postSchema";
+import messageCollection from "../models/messageSchema";
 import commentCollection from "../models/CommentSchema";
+import chatCollection from "../models/chatSchema";
 import token from "../models/token";
 import { nodemailer } from "../utils/nodemailer";
 const saltRounds = 10;
@@ -101,13 +103,13 @@ export default {
     const userLogin: {
       Status: boolean;
       message: string;
-      name: string;
+      user: [];
       token: string;
       id: string;
     } = {
       Status: false,
       message: "",
-      name: "",
+      user: [],
       token: "",
       id: "",
     };
@@ -123,32 +125,22 @@ export default {
             const token = await generateToken({
               id: findUser[0]?._id.toString(),
             });
-            userLogin.token = token;
-            userLogin.name = findUser[0].username;
-            userLogin.id = findUser[0]._id;
-            userLogin.Status = true;
 
             if (!findUser[0]?.status) {
-              res.status(200).send({ userLogin });
+              res.status(200).send({ message:"" ,user:findUser[0], Status:true ,token:token });
             } else {
-              userLogin.message = "Admin blocked please sent email from admin";
-              userLogin.Status = false;
-              res.send({ userLogin });
+      
+              res.send({ message:"Admin blocked please sent email from admin" , Status:true  });
             }
           } else {
-            userLogin.message = " Password is wrong";
-            userLogin.Status = false;
-            res.send({ userLogin });
+            res.send({ message:" Password is wrong" , Status:false });
           }
         } else {
-          userLogin.message = "your signup not complete";
-          userLogin.Status = false;
-          res.send({ userLogin });
+  
+          res.send({ message:"your signup not complete" , Status:false });
         }
       } else {
-        userLogin.message = "wrong Email";
-        userLogin.Status = false;
-        res.send({ userLogin });
+        res.send({ message:"wrong Email" , Status:false  });
       }
     } catch (error) {
       console.log(error);
@@ -213,19 +205,7 @@ export default {
     }
   },
   googleLogin: async (req: Request, res: Response) => {
-    const userLogin: {
-      Status: boolean;
-      message: string;
-      name: string;
-      token: string;
-      id: string;
-    } = {
-      Status: false,
-      message: "",
-      name: "",
-      token: "",
-      id: "",
-    };
+   
     try {
       const { email, name } = req.body;
 
@@ -237,18 +217,12 @@ export default {
           username: name,
         }).save();
         const token = await generateToken({ id: user._id.toString() });
-        userLogin.token = token;
-        userLogin.name = user.username;
-        userLogin.id = user._id;
-        userLogin.Status = true;
-        res.status(200).send({ userLogin });
+        
+        res.status(200).send({ token:token,user:user,Status:true, });
       } else {
         const token = await generateToken({ id: user[0]._id.toString() });
-        userLogin.token = token;
-        userLogin.name = user[0].username;
-        userLogin.id = user[0]._id;
-        userLogin.Status = true;
-        res.status(200).send({ userLogin });
+       
+        res.status(200).send({ token:token,user:user[0],Status:true, });
       }
     } catch (error) {
       console.log(error);
@@ -489,20 +463,7 @@ export default {
       console.log(error);
     }
   },
-  checkUser: async (req: Request, res: Response) => {
-    try {
-      const userId = req.body.userId;
-      const user = await UserCollection.findById(userId);
-      if (!user) res.json({ message: "no user", success: false });
-      if (user?.public) {
-        res.json({ message: "user Account public", success: true });
-      } else {
-        res.json({ message: "user Account private", success: false });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
+  
   getAllRequest: async (req: Request, res: Response) => {
     try {
       const userId = req.body.userId;
@@ -562,24 +523,7 @@ export default {
       console.log(error);
     }
   },
-  requestsCount: async (req: Request, res: Response) => {
-    try {
-      const userId = req.body.userId;
-      const userData = await UserCollection.findOne({ _id: userId });
-      if (!userData) res.json({ message: "no user", success: false });
-
-      const count = userData?.Requests?.length;
-      console.log(count);
-
-      res.json({
-        message: "success accepted user ",
-        count: count,
-        success: true,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  },
+ 
   deleteRequests: async (req: Request, res: Response) => {
     try {
       const userId = req.body.userId;
@@ -595,7 +539,80 @@ export default {
         res.json({ message: "something is wrong ", success: false });
       }
     } catch (error) {
+      
       console.log(error);
     }
   },
+  createChat: async (req: Request, res: Response) => {
+    const newChat = new chatCollection({
+      members: [req.body.senderId, req.body.receiverId],
+    });
+    try {
+      const result = await newChat.save();
+      res.status(200).json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  },
+  getChat: async (req: Request, res: Response) => {
+    try {
+      console.log(req.params.userId);
+      
+      const chat = await chatCollection.find({
+        members: { $in: [req.params.userId] },
+      });
+      res.status(200).json(chat);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  },
+  chatFind: async (req: Request, res: Response) => {
+    try {
+      const chat = await chatCollection.findOne({
+        members: { $all: [req.params.firstId, req.params.secondId] },
+      });
+      res.status(200).json(chat);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  },
+  addMessage: async (req: Request, res: Response) => {
+    const { chatId, senderId, text } = req.body;
+    console.log(chatId);
+    console.log(senderId);
+    console.log(text);
+  
+    const message = new messageCollection({
+      chatId,
+      senderId,
+      text,
+    });
+
+    try {
+      const result =await message.save();
+      res.status(200).json(result);
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  },
+  getMessages: async (req: Request, res: Response) => {
+     const { chatId } = req.params
+     try {
+
+       const result = await messageCollection.find({chatId})
+       console.log(result);
+       
+       res.status(200).json(result);
+
+     } catch (error) {
+      res.status(500).json(error);
+
+     }
+
+  }
 };

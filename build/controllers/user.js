@@ -17,7 +17,9 @@ const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const postSchema_1 = __importDefault(require("../models/postSchema"));
+const messageSchema_1 = __importDefault(require("../models/messageSchema"));
 const CommentSchema_1 = __importDefault(require("../models/CommentSchema"));
+const chatSchema_1 = __importDefault(require("../models/chatSchema"));
 const token_1 = __importDefault(require("../models/token"));
 const nodemailer_1 = require("../utils/nodemailer");
 const saltRounds = 10;
@@ -105,128 +107,141 @@ exports.default = {
         const userLogin = {
             Status: false,
             message: "",
-            name: "",
+            user: [],
             token: "",
             id: "",
         };
-        const findUser = yield userSchema_1.default.find({ email });
-        if (findUser.length !== 0) {
-            if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
-                const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
-                if (passwordVerify) {
-                    const token = yield (0, jws_1.generateToken)({
-                        id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString(),
-                    });
-                    userLogin.token = token;
-                    userLogin.name = findUser[0].username;
-                    userLogin.id = findUser[0]._id;
-                    userLogin.Status = true;
-                    if (!((_c = findUser[0]) === null || _c === void 0 ? void 0 : _c.status)) {
-                        res.status(200).send({ userLogin });
+        try {
+            const findUser = yield userSchema_1.default.find({ email });
+            if (findUser.length !== 0) {
+                if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
+                    const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
+                    if (passwordVerify) {
+                        const token = yield (0, jws_1.generateToken)({
+                            id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString(),
+                        });
+                        if (!((_c = findUser[0]) === null || _c === void 0 ? void 0 : _c.status)) {
+                            res.status(200).send({ message: "", user: findUser[0], Status: true, token: token });
+                        }
+                        else {
+                            res.send({ message: "Admin blocked please sent email from admin", Status: true });
+                        }
                     }
                     else {
-                        userLogin.message = "Admin blocked please sent email from admin";
-                        userLogin.Status = false;
-                        res.send({ userLogin });
+                        res.send({ message: " Password is wrong", Status: false });
                     }
                 }
                 else {
-                    userLogin.message = " Password is wrong";
-                    userLogin.Status = false;
-                    res.send({ userLogin });
+                    res.send({ message: "your signup not complete", Status: false });
                 }
             }
             else {
-                userLogin.message = "your signup not complete";
-                userLogin.Status = false;
-                res.send({ userLogin });
+                res.send({ message: "wrong Email", Status: false });
             }
         }
-        else {
-            userLogin.message = "wrong Email";
-            userLogin.Status = false;
-            res.send({ userLogin });
+        catch (error) {
+            console.log(error);
         }
     }),
     addPost: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { imageLinks, description, userId } = req.body;
-        const post = yield new postSchema_1.default({
-            userId,
-            img: imageLinks,
-            description,
-        }).save();
-        res.status(201).json({ status: true });
+        try {
+            const { imageLinks, description, userId } = req.body;
+            const post = yield new postSchema_1.default({
+                userId,
+                img: imageLinks,
+                description,
+            }).save();
+            res.status(201).json({ status: true });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getMyPost: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const allPost = yield postSchema_1.default.find({ userId });
-        res.status(201).json({ status: true, allPost });
+        try {
+            const userId = req.body.userId;
+            const allPost = yield postSchema_1.default.find({ userId });
+            res.status(201).json({ status: true, allPost });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getMyProfile: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const useData = yield postSchema_1.default
-            .find({ userId: userId })
-            .populate("userId");
-        res.status(201).json({ useData });
+        try {
+            const userId = req.body.userId;
+            const useData = yield postSchema_1.default
+                .find({ userId: userId })
+                .populate("userId");
+            res.status(201).json({ useData });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getAllPosts: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const AllPosts = yield postSchema_1.default.find().populate("userId");
-        res.status(201).json({ AllPosts });
+        try {
+            const AllPosts = yield postSchema_1.default.find().populate("userId");
+            res.status(201).json({ AllPosts });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getOnePost: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { userId, PostId } = req.params;
     }),
     getFriendsAccount: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.params.userId;
-        const FriendsAccount = yield userSchema_1.default.find({ _id: userId });
-        res.status(201).json({ FriendsAccount });
+        try {
+            const userId = req.params.userId;
+            const FriendsAccount = yield userSchema_1.default.find({ _id: userId });
+            res.status(201).json({ FriendsAccount });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     googleLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userLogin = {
-            Status: false,
-            message: "",
-            name: "",
-            token: "",
-            id: "",
-        };
-        const { email, name } = req.body;
-        const user = yield userSchema_1.default.find({ email });
-        if (user.length === 0) {
-            const user = yield new userSchema_1.default({
-                name: name,
-                email: email,
-                username: name,
-            }).save();
-            const token = yield (0, jws_1.generateToken)({ id: user._id.toString() });
-            userLogin.token = token;
-            userLogin.name = user.username;
-            userLogin.id = user._id;
-            userLogin.Status = true;
-            res.status(200).send({ userLogin });
+        try {
+            const { email, name } = req.body;
+            const user = yield userSchema_1.default.find({ email });
+            if (user.length === 0) {
+                const user = yield new userSchema_1.default({
+                    name: name,
+                    email: email,
+                    username: name,
+                }).save();
+                const token = yield (0, jws_1.generateToken)({ id: user._id.toString() });
+                res.status(200).send({ token: token, user: user, Status: true, });
+            }
+            else {
+                const token = yield (0, jws_1.generateToken)({ id: user[0]._id.toString() });
+                res.status(200).send({ token: token, user: user[0], Status: true, });
+            }
         }
-        else {
-            const token = yield (0, jws_1.generateToken)({ id: user[0]._id.toString() });
-            userLogin.token = token;
-            userLogin.name = user[0].username;
-            userLogin.id = user[0]._id;
-            userLogin.Status = true;
-            res.status(200).send({ userLogin });
+        catch (error) {
+            console.log(error);
         }
     }),
     likePostReq: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const postId = req.params.postId;
-        const post = yield postSchema_1.default.findById(postId);
-        if (!post) {
-            return res.json({ Message: "post not fount", success: false });
+        try {
+            const userId = req.body.userId;
+            const postId = req.params.postId;
+            const post = yield postSchema_1.default.findById(postId);
+            if (!post) {
+                return res.json({ Message: "post not fount", success: false });
+            }
+            if (!post.likes.includes(userId)) {
+                yield post.updateOne({ $push: { likes: userId } });
+                return res.json({ Message: "post liked successfully", success: true });
+            }
+            else {
+                yield post.updateOne({ $pull: { likes: userId } });
+                return res.json({ Message: "post liked successfully", success: true });
+            }
         }
-        if (!post.likes.includes(userId)) {
-            yield post.updateOne({ $push: { likes: userId } });
-            return res.json({ Message: "post liked successfully", success: true });
-        }
-        else {
-            yield post.updateOne({ $pull: { likes: userId } });
-            return res.json({ Message: "post liked successfully", success: true });
+        catch (error) {
+            console.log(error);
         }
     }),
     postComment: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -254,253 +269,348 @@ exports.default = {
                 comment: postComment,
             });
         }
-        catch (error) { }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getComment: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const postId = req.params.postId;
-        const comments = yield CommentSchema_1.default.aggregate([
-            {
-                $match: {
-                    postId: new mongoose_1.default.Types.ObjectId(postId),
-                },
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "userId",
-                    foreignField: "_id",
-                    as: "author",
-                },
-            },
-            {
-                $unwind: {
-                    path: "$author",
-                },
-            },
-            {
-                $project: {
-                    _id: 1,
-                    userId: 1,
-                    postId: 1,
-                    comment: 1,
-                    likes: 1,
-                    createdAt: 1,
-                    "author.username": 1,
-                },
-            },
-            {
-                $replaceRoot: {
-                    newRoot: {
-                        $mergeObjects: ["$$ROOT", "$author"],
+        try {
+            const postId = req.params.postId;
+            const comments = yield CommentSchema_1.default.aggregate([
+                {
+                    $match: {
+                        postId: new mongoose_1.default.Types.ObjectId(postId),
                     },
                 },
-            },
-            {
-                $project: {
-                    author: 0,
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "userId",
+                        foreignField: "_id",
+                        as: "author",
+                    },
                 },
-            },
-            {
-                $sort: {
-                    createdAt: -1,
+                {
+                    $unwind: {
+                        path: "$author",
+                    },
                 },
-            },
-        ]);
-        return res.json({
-            message: "comments fetched successfully",
-            comments: comments,
-            success: true,
-        });
+                {
+                    $project: {
+                        _id: 1,
+                        userId: 1,
+                        postId: 1,
+                        comment: 1,
+                        likes: 1,
+                        createdAt: 1,
+                        "author.username": 1,
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: ["$$ROOT", "$author"],
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        author: 0,
+                    },
+                },
+                {
+                    $sort: {
+                        createdAt: -1,
+                    },
+                },
+            ]);
+            return res.json({
+                message: "comments fetched successfully",
+                comments: comments,
+                success: true,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getUserData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const user = yield userSchema_1.default.find({ _id: userId });
-        return res.json({
-            message: "comments fetched successfully",
-            user: user,
-            success: true,
-        });
+        try {
+            const userId = req.body.userId;
+            const user = yield userSchema_1.default.find({ _id: userId });
+            return res.json({
+                message: "comments fetched successfully",
+                user: user,
+                success: true,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     getUserAllPost: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.params.userId;
-        const AllPosts = yield postSchema_1.default
-            .find({ userId: userId })
-            .populate("userId");
-        res.json({
-            message: "AllPosts fetched successfully",
-            AllPosts: AllPosts,
-            success: true,
-        });
+        try {
+            const userId = req.params.userId;
+            const AllPosts = yield postSchema_1.default
+                .find({ userId: userId })
+                .populate("userId");
+            res.json({
+                message: "AllPosts fetched successfully",
+                AllPosts: AllPosts,
+                success: true,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     updateUserData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _d;
-        const userId = req.body.userId;
-        const user = yield userSchema_1.default.find({ username: req.body.userName });
-        if (user.length === 0 || ((_d = user[0]) === null || _d === void 0 ? void 0 : _d._id) === userId) {
-            userSchema_1.default.updateOne({ _id: userId }, {
-                $set: {
-                    username: req.body.username,
-                    name: req.body.name,
-                    phoneNo: req.body.phoneNo,
-                    dob: req.body.dob,
-                    country: req.body.country,
-                    description: req.body.description,
-                    city: req.body.city,
-                    PostalCode: req.body.PostalCode,
-                    ProfileImg: req.body.ProfileImg,
-                    coverImg: req.body.coverImg,
-                },
-            }).then((data) => {
-                if (data) {
-                    if (data.modifiedCount > 0) {
-                        return res.json({
-                            message: "user data updated successfully",
-                            success: true,
-                        });
+        try {
+            const userId = req.body.userId;
+            const user = yield userSchema_1.default.find({ username: req.body.userName });
+            if (user.length === 0 || ((_d = user[0]) === null || _d === void 0 ? void 0 : _d._id) === userId) {
+                userSchema_1.default.updateOne({ _id: userId }, {
+                    $set: {
+                        username: req.body.username,
+                        name: req.body.name,
+                        phoneNo: req.body.phoneNo,
+                        dob: req.body.dob,
+                        country: req.body.country,
+                        description: req.body.description,
+                        city: req.body.city,
+                        PostalCode: req.body.PostalCode,
+                        ProfileImg: req.body.ProfileImg,
+                        coverImg: req.body.coverImg,
+                    },
+                }).then((data) => {
+                    if (data) {
+                        if (data.modifiedCount > 0) {
+                            return res.json({
+                                message: "user data updated successfully",
+                                success: true,
+                            });
+                        }
+                        else {
+                            return res.json({
+                                message: "",
+                                success: "noUpdates",
+                            });
+                        }
                     }
                     else {
                         return res.json({
-                            message: "",
-                            success: "noUpdates",
+                            message: "something is wrong",
+                            success: false,
                         });
                     }
-                }
-                else {
-                    return res.json({
-                        message: "something is wrong",
-                        success: false,
-                    });
-                }
-            });
+                });
+            }
+            else {
+                return res.json({
+                    message: "userName Exist",
+                    success: false,
+                });
+            }
         }
-        else {
-            return res.json({
-                message: "userName Exist",
-                success: false,
-            });
+        catch (error) {
+            console.log(error);
         }
     }),
     followUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _e, _f, _g;
-        const userId = req.body.userId;
-        const followUserId = req.body.followId;
-        const user = yield userSchema_1.default.findById(followUserId);
-        const mainUser = yield userSchema_1.default.findById(userId);
-        if (!user)
-            res.json({ message: "no user", success: false });
-        if (!mainUser)
-            res.json({ message: "no user", success: false });
-        if (user === null || user === void 0 ? void 0 : user.public) {
-            if (!((_e = user === null || user === void 0 ? void 0 : user.Followers) === null || _e === void 0 ? void 0 : _e.includes(userId))) {
-                yield user.updateOne({ $push: { Followers: userId } });
-                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: userId } }));
-                res.json({ message: "successfully followed user", success: true });
-            }
-            else {
-                yield user.updateOne({ $pull: { Followers: userId } });
-                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
-                res.json({ message: "successfully unFollowed user", success: true });
-            }
-        }
-        else {
-            if ((_f = user === null || user === void 0 ? void 0 : user.Followers) === null || _f === void 0 ? void 0 : _f.includes(userId)) {
-                yield user.updateOne({ $pull: { Followers: userId } });
-                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
-                res.json({ message: "successfully unFollowed user", success: true });
-            }
-            else {
-                if (!((_g = user === null || user === void 0 ? void 0 : user.Requests) === null || _g === void 0 ? void 0 : _g.includes(userId))) {
-                    yield (user === null || user === void 0 ? void 0 : user.updateOne({ $push: { Requests: userId } }));
-                    res.json({ message: "successfully Requested user", success: true });
+        try {
+            const userId = req.body.userId;
+            const followUserId = req.body.followId;
+            const user = yield userSchema_1.default.findById(followUserId);
+            const mainUser = yield userSchema_1.default.findById(userId);
+            if (!user)
+                res.json({ message: "no user", success: false });
+            if (!mainUser)
+                res.json({ message: "no user", success: false });
+            if (user === null || user === void 0 ? void 0 : user.public) {
+                if (!((_e = user === null || user === void 0 ? void 0 : user.Followers) === null || _e === void 0 ? void 0 : _e.includes(userId))) {
+                    yield user.updateOne({ $push: { Followers: userId } });
+                    yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: userId } }));
+                    res.json({ message: "successfully followed user", success: true });
                 }
                 else {
-                    yield user.updateOne({ $pull: { Requests: userId } });
-                    res.json({ message: "successfully unRequested user", success: true });
+                    yield user.updateOne({ $pull: { Followers: userId } });
+                    yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
+                    res.json({ message: "successfully unFollowed user", success: true });
+                }
+            }
+            else {
+                if ((_f = user === null || user === void 0 ? void 0 : user.Followers) === null || _f === void 0 ? void 0 : _f.includes(userId)) {
+                    yield user.updateOne({ $pull: { Followers: userId } });
+                    yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
+                    res.json({ message: "successfully unFollowed user", success: true });
+                }
+                else {
+                    if (!((_g = user === null || user === void 0 ? void 0 : user.Requests) === null || _g === void 0 ? void 0 : _g.includes(userId))) {
+                        yield (user === null || user === void 0 ? void 0 : user.updateOne({ $push: { Requests: userId } }));
+                        res.json({ message: "successfully Requested user", success: true });
+                    }
+                    else {
+                        yield user.updateOne({ $pull: { Requests: userId } });
+                        res.json({
+                            message: "successfully unRequested user",
+                            success: true,
+                        });
+                    }
                 }
             }
         }
-    }),
-    checkUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const user = yield userSchema_1.default.findById(userId);
-        if (!user)
-            res.json({ message: "no user", success: false });
-        if (user === null || user === void 0 ? void 0 : user.public) {
-            res.json({ message: "user Account public", success: true });
-        }
-        else {
-            res.json({ message: "user Account private", success: false });
+        catch (error) {
+            console.log(error);
         }
     }),
     getAllRequest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.body.userId;
-        const Request = yield userSchema_1.default.aggregate([
-            {
-                $match: {
-                    _id: new mongoose_1.default.Types.ObjectId(userId),
+        try {
+            const userId = req.body.userId;
+            const Request = yield userSchema_1.default.aggregate([
+                {
+                    $match: {
+                        _id: new mongoose_1.default.Types.ObjectId(userId),
+                    },
                 },
-            },
-            {
-                $project: {
-                    Requests: 1,
+                {
+                    $project: {
+                        Requests: 1,
+                    },
                 },
-            },
-            {
-                $unwind: {
-                    path: "$Requests",
+                {
+                    $unwind: {
+                        path: "$Requests",
+                    },
                 },
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "Requests",
-                    foreignField: "_id",
-                    as: "Requests",
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "Requests",
+                        foreignField: "_id",
+                        as: "Requests",
+                    },
                 },
-            },
-        ]);
-        res.json({ message: "get All Request", Request: Request, success: false });
+            ]);
+            res.json({
+                message: "get All Request",
+                Request: Request,
+                success: false,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }),
     acceptRequest: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _h;
-        const userId = req.body.userId;
-        const acceptId = req.body.acceptId;
-        const user = yield userSchema_1.default.findById(userId);
-        const acceptUserId = yield userSchema_1.default.findById(acceptId);
-        if (!acceptUserId)
-            res.json({ message: "no user", success: false });
-        if (!user)
-            res.json({ message: "no user", success: false });
-        if ((_h = user === null || user === void 0 ? void 0 : user.Requests) === null || _h === void 0 ? void 0 : _h.includes(acceptId)) {
-            yield user.updateOne({ $pull: { Requests: acceptId } });
-            yield user.updateOne({ $push: { Followers: acceptId } });
-            yield (acceptUserId === null || acceptUserId === void 0 ? void 0 : acceptUserId.updateOne({ $push: { Following: acceptId } }));
+        try {
+            const userId = req.body.userId;
+            const acceptId = req.body.acceptId;
+            const user = yield userSchema_1.default.findById(userId);
+            const acceptUserId = yield userSchema_1.default.findById(acceptId);
+            if (!acceptUserId)
+                res.json({ message: "no user", success: false });
+            if (!user)
+                res.json({ message: "no user", success: false });
+            if ((_h = user === null || user === void 0 ? void 0 : user.Requests) === null || _h === void 0 ? void 0 : _h.includes(acceptId)) {
+                yield user.updateOne({ $pull: { Requests: acceptId } });
+                yield user.updateOne({ $push: { Followers: acceptId } });
+                yield (acceptUserId === null || acceptUserId === void 0 ? void 0 : acceptUserId.updateOne({ $push: { Following: acceptId } }));
+            }
+            res.json({ message: "success accepted user ", success: true });
         }
-        res.json({ message: "success accepted user ", success: true });
-    }),
-    requestsCount: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        var _j;
-        const userId = req.body.userId;
-        const userData = yield userSchema_1.default.findOne({ _id: userId });
-        if (!userData)
-            res.json({ message: "no user", success: false });
-        const count = (_j = userData === null || userData === void 0 ? void 0 : userData.Requests) === null || _j === void 0 ? void 0 : _j.length;
-        console.log(count);
-        res.json({ message: "success accepted user ", count: count, success: true });
+        catch (error) {
+            console.log(error);
+        }
     }),
     deleteRequests: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        var _k;
-        const userId = req.body.userId;
-        const deleteId = req.params.deleteId;
-        const user = yield userSchema_1.default.findById(userId);
-        if (!user)
-            res.json({ message: "no user", success: false });
-        if ((_k = user === null || user === void 0 ? void 0 : user.Requests) === null || _k === void 0 ? void 0 : _k.includes(deleteId)) {
-            yield user.updateOne({ $pull: { Requests: deleteId } });
-            res.json({ message: "success delete request ", success: true });
+        var _j;
+        try {
+            const userId = req.body.userId;
+            const deleteId = req.params.deleteId;
+            const user = yield userSchema_1.default.findById(userId);
+            if (!user)
+                res.json({ message: "no user", success: false });
+            if ((_j = user === null || user === void 0 ? void 0 : user.Requests) === null || _j === void 0 ? void 0 : _j.includes(deleteId)) {
+                yield user.updateOne({ $pull: { Requests: deleteId } });
+                res.json({ message: "success delete request ", success: true });
+            }
+            else {
+                res.json({ message: "something is wrong ", success: false });
+            }
         }
-        else {
-            res.json({ message: "something is wrong ", success: false });
+        catch (error) {
+            console.log(error);
+        }
+    }),
+    createChat: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const newChat = new chatSchema_1.default({
+            members: [req.body.senderId, req.body.receiverId],
+        });
+        try {
+            const result = yield newChat.save();
+            res.status(200).json(result);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
+    }),
+    getChat: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            console.log(req.params.userId);
+            const chat = yield chatSchema_1.default.find({
+                members: { $in: [req.params.userId] },
+            });
+            res.status(200).json(chat);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
+    }),
+    chatFind: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const chat = yield chatSchema_1.default.findOne({
+                members: { $all: [req.params.firstId, req.params.secondId] },
+            });
+            res.status(200).json(chat);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
+    }),
+    addMessage: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { chatId, senderId, text } = req.body;
+        console.log(chatId);
+        console.log(senderId);
+        console.log(text);
+        const message = new messageSchema_1.default({
+            chatId,
+            senderId,
+            text,
+        });
+        try {
+            const result = yield message.save();
+            res.status(200).json(result);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
+    }),
+    getMessages: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { chatId } = req.params;
+        try {
+            const result = yield messageSchema_1.default.find({ chatId });
+            console.log(result);
+            res.status(200).json(result);
+        }
+        catch (error) {
+            res.status(500).json(error);
         }
     })
 };
