@@ -1,57 +1,82 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import express, { Router } from 'express'
-import controllers from '../controllers/user'
-const router: Router = express.Router()
-const authMiddleware = require('../middleware/authMiddleware')
+import express, { Router } from "express";
+import {
+  postSignup,
+  verify,
+  userLogin,
+  googleLogin,
+  addPost,
+  getMyPost,
+  getUserData,
+  getAllPosts,
+  getOnePost,
+  getFriendsAccount,
+  likePostReq,
+  getComment,
+  getUserAllPost,
+  postComment,
+  updateUserData,
+  followUser,
+  getAllRequest,
+  acceptRequest,
+  deleteRequests,
+  createChat,
+  getChat,
+  chatFind,
+  addMessage,
+  getMessages,
+} from "../controllers/user";
+const router: Router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.post('/register', controllers.postSignup)
+router.post("/register", postSignup);
 
-router.get('/verifySignUp/:id/:token', controllers.verify)
+router.get("/verifySignUp/:id/:token", verify);
 
-router.post('/login', controllers.userLogin)
+router.post("/login", userLogin);
 
-router.post('/googleLogin' ,controllers.googleLogin)
+router.post("/googleLogin", googleLogin);
 
-router.post('/addPost', authMiddleware,controllers.addPost )
+router.post("/addPost", authMiddleware, addPost);
 
-router.get('/getMyPost', authMiddleware,controllers.getMyPost)
+router.get("/getMyPost", authMiddleware, getMyPost);
 
-router.get('/getMyProfile', authMiddleware,controllers.getUserData)
+router.get("/getMyProfile", authMiddleware, getUserData);
 
-router.get('/getAllPosts', authMiddleware,controllers.getAllPosts)
+router.get("/getAllPosts", authMiddleware, getAllPosts);
 
-router.get('/getOnePost/:userId/:PostId', authMiddleware,controllers.getOnePost)
+router.get("/getOnePost/:userId/:PostId", authMiddleware, getOnePost);
 
-router.get('/getFriendsAccount/:userId',authMiddleware,controllers.getFriendsAccount)
+router.get("/getFriendsAccount/:userId", authMiddleware, getFriendsAccount);
 
-router.get('/likePostReq/:postId', authMiddleware,controllers.likePostReq)
+router.get("/likePostReq/:postId", authMiddleware, likePostReq);
 
-router.post('/postComment/:postId', authMiddleware,controllers.postComment)
+router.post("/postComment/:postId", authMiddleware, postComment);
 
-router.get('/getComment/:postId', authMiddleware,controllers.getComment)
+router.get("/getComment/:postId", authMiddleware, getComment);
 
-router.get('/getUserData' ,authMiddleware,controllers.getUserData)
+router.get("/getUserData", authMiddleware, getUserData);
 
-router.get('/getUserAllPost/:userId', authMiddleware,controllers.getUserAllPost)
+router.get("/getUserAllPost/:userId", authMiddleware, getUserAllPost);
 
-router.put('/updateUserData', authMiddleware,controllers.updateUserData)
+router.put("/updateUserData", authMiddleware, updateUserData);
 
-router.put('/followUser' ,authMiddleware,controllers.followUser)
+router.put("/followUser", authMiddleware, followUser);
 
-router.get('/getAllRequest', authMiddleware,controllers.getAllRequest)
+router.get("/getAllRequest", authMiddleware, getAllRequest);
 
-router.put('/acceptRequest', authMiddleware,controllers.acceptRequest)
+router.put("/acceptRequest", authMiddleware, acceptRequest);
 
-router.delete('/deleteRequests/:deleteId', authMiddleware,controllers.deleteRequests)
+router.delete("/deleteRequests/:deleteId", authMiddleware, deleteRequests);
 
-router.post('/createChat', authMiddleware,controllers.createChat)
+router.post("/createChat", authMiddleware, createChat);
 
-router.get('/chat/:userId', authMiddleware,controllers.getChat)
+router.get("/chat/:userId", authMiddleware, getChat);
 
-router.get('/chatFind/:firstId/:secondId', authMiddleware,controllers.chatFind)
+router.get("/chatFind/:firstId/:secondId", authMiddleware, chatFind);
 
-router.post('/addMessage',authMiddleware,controllers.addMessage)
+router.post("/addMessage", authMiddleware, addMessage);
 
-router.get('/getMessages/:chatId', authMiddleware,controllers.getMessages)
+router.get("/getMessages/:chatId", authMiddleware, getMessages);
 
-module.exports = router
+module.exports = router;

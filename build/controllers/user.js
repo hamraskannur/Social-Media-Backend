@@ -606,7 +606,6 @@ exports.default = {
         const { chatId } = req.params;
         try {
             const result = yield messageSchema_1.default.find({ chatId });
-            console.log(result);
             res.status(200).json(result);
         }
         catch (error) {
