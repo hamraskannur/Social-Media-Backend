@@ -25,6 +25,10 @@ import {
   chatFind,
   addMessage,
   getMessages,
+  likeMainComment,
+  postReplayComment,
+  getReplayComment,
+  likeReplayComment
 } from "../controllers/user";
 const router: Router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -78,5 +82,13 @@ router.get("/chatFind/:firstId/:secondId", authMiddleware, chatFind);
 router.post("/addMessage", authMiddleware, addMessage);
 
 router.get("/getMessages/:chatId", authMiddleware, getMessages);
+
+router.post("/likeMainComment", authMiddleware,likeMainComment)
+
+router.post('/postReplayComment',authMiddleware,postReplayComment)
+
+router.get('/getReplayComment/:commentId',authMiddleware,getReplayComment)
+
+router.post('/likeReplayComment',authMiddleware,likeReplayComment)
 
 module.exports = router;

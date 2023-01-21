@@ -9,6 +9,7 @@ import postCollection from "../models/postSchema";
 import messageCollection from "../models/messageSchema";
 import commentCollection from "../models/CommentSchema";
 import chatCollection from "../models/chatSchema";
+import ReplayComment from "../models/ReplayComment";
 import token from "../models/token";
 import { nodemailer } from "../utils/nodemailer";
 const saltRounds = 10;
@@ -131,14 +132,12 @@ export const userLogin = async (req: Request, res: Response) => {
           });
 
           if (!findUser[0]?.status) {
-            res
-              .status(200)
-              .send({
-                message: "",
-                user: findUser[0],
-                Status: true,
-                token: token,
-              });
+            res.status(200).send({
+              message: "",
+              user: findUser[0],
+              Status: true,
+              token: token,
+            });
           } else {
             res.send({
               message: "Admin blocked please sent email from admin",
@@ -327,6 +326,7 @@ export const getComment = async (req: Request, res: Response) => {
           likes: 1,
           createdAt: 1,
           "author.username": 1,
+          "author.ProfileImg": 1,
         },
       },
       {
@@ -564,12 +564,19 @@ export const deleteRequests = async (req: Request, res: Response) => {
   }
 };
 export const createChat = async (req: Request, res: Response) => {
-  const newChat = new chatCollection({
-    members: [req.body.senderId, req.body.receiverId],
-  });
   try {
-    const result = await newChat.save();
-    res.status(200).json(result);
+    const chat = await chatCollection.find({
+      members: { $in: [req.body.senderId, req.body.receiverId] },
+    });
+    if (!chat) {
+      const newChat = new chatCollection({
+        members: [req.body.senderId, req.body.receiverId],
+      });
+
+      const result = await newChat.save();
+      res.status(200).json(result);
+    }
+    res.status(200).json("ok");
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -577,8 +584,6 @@ export const createChat = async (req: Request, res: Response) => {
 };
 export const getChat = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.userId);
-
     const chat = await chatCollection.find({
       members: { $in: [req.params.userId] },
     });
@@ -629,3 +634,127 @@ export const getMessages = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+
+export const likeMainComment = async (req: Request, res: Response) => {
+  const { userId, commentId } = req.body;
+
+  try {
+    const comment = await commentCollection.findById(commentId);
+
+    if (!comment) res.json({ message: "no comment", success: false });
+
+    if (comment) {
+      if (comment?.likes?.includes(userId)) {
+        await comment.updateOne({ $pull: { likes: userId } });
+        res.json({ message: "unLiked comment", success: true });
+      } else {
+        await comment.updateOne({ $push: { likes: userId } });
+        res.json({ message: "liked comment", success: true });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const postReplayComment = async (req: Request, res: Response) => {
+  const { userId, commentId, newComment } = req.body;
+  try {
+    const postComment = new ReplayComment({
+      userId,
+      commentId,
+      comment: newComment,
+    });
+    postComment.save();
+    res.json({ message: "liked comment",comments:postComment, success: true });
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getReplayComment =async (req: Request, res: Response) => {
+  const commentId=req.params.commentId
+   try {
+    const comments = await ReplayComment.aggregate([
+      {
+        $match: {
+          commentId: new mongoose.Types.ObjectId(commentId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      {
+        $unwind: {
+          path: "$author",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          postId: 1,
+          comment: 1,
+          likes: 1,
+          createdAt: 1,
+          "author.username": 1,
+          "author.ProfileImg": 1,
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$$ROOT", "$author"],
+          },
+        },
+      },
+      {
+        $project: {
+          author: 0,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    
+    res.json({ message: "liked comment",comments:comments, success: true });
+
+   } catch (error) {
+    console.log(error);
+    
+   }
+   
+}
+
+
+export const likeReplayComment =async(req: Request, res: Response) => {
+
+  const { userId, commentId } = req.body;
+
+  try {
+    const comment = await ReplayComment.findById(commentId);
+
+    if (!comment) res.json({ message: "no comment", success: false });
+
+    if (comment) {
+      if (comment?.likes?.includes(userId)) {
+        await comment.updateOne({ $pull: { likes: userId } });
+        res.json({ message: "unLiked comment", success: true });
+      } else {
+        await comment.updateOne({ $push: { likes: userId } });
+        res.json({ message: "liked comment", success: true });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}

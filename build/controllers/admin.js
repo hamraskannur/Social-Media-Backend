@@ -12,18 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
-const bcrypt = require('bcrypt');
-exports.default = {
-    adminLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a, _b;
-        const userSignUpp = {
-            Status: false,
-            message: '',
-            token: ''
-        };
+const bcrypt = require("bcrypt");
+const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const userSignUpp = {
+        Status: false,
+        message: "",
+        token: "",
+    };
+    try {
         const { email, password } = req.body;
         const Admin = yield adminSchema_1.default.find({ email });
         if (Admin.length > 0) {
@@ -35,29 +36,47 @@ exports.default = {
                 res.status(200).send({ userSignUpp });
             }
             else {
-                userSignUpp.message = 'your password wrong';
+                userSignUpp.message = "your password wrong";
                 userSignUpp.Status = false;
                 res.send({ userSignUpp });
             }
         }
         else {
-            userSignUpp.message = 'your Email wrong';
+            userSignUpp.message = "your Email wrong";
             userSignUpp.Status = false;
             res.send({ userSignUpp });
         }
-    }),
-    getAllUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.adminLogin = adminLogin;
+const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const Users = yield userSchema_1.default.find({ verified: true });
         res.send({ Users });
-    }),
-    changeStatus: (req, res) => {
-        const { Status, userId } = req.params;
-        void userSchema_1.default.updateOne({ _id: userId }, {
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getAllUser = getAllUser;
+const changeStatus = (req, res) => {
+    const { Status, userId } = req.params;
+    try {
+        void userSchema_1.default
+            .updateOne({ _id: userId }, {
             $set: {
-                status: Status
-            }
-        }).then((date) => {
+                status: Status,
+            },
+        })
+            .then((date) => {
             res.status(200).send({ Status: true });
         });
     }
+    catch (error) {
+        console.log(error);
+    }
 };
+exports.changeStatus = changeStatus;
