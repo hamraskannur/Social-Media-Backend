@@ -207,6 +207,10 @@ export const getAllPosts = async (req: Request, res: Response) => {
 
 export const getOnePost = async (req: Request, res: Response) => {
   const { userId, PostId } = req.params;
+  
+  const Post = await postCollection.find({_id:PostId}).populate("userId");
+  res.status(201).json({ Post });
+
 };
 
 export const getFriendsAccount = async (req: Request, res: Response) => {

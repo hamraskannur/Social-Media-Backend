@@ -206,6 +206,8 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllPosts = getAllPosts;
 const getOnePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, PostId } = req.params;
+    const Post = yield postSchema_1.default.find({ _id: PostId }).populate("userId");
+    res.status(201).json({ Post });
 });
 exports.getOnePost = getOnePost;
 const getFriendsAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
