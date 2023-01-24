@@ -207,10 +207,9 @@ export const getAllPosts = async (req: Request, res: Response) => {
 
 export const getOnePost = async (req: Request, res: Response) => {
   const { userId, PostId } = req.params;
-  
-  const Post = await postCollection.find({_id:PostId}).populate("userId");
-  res.status(201).json({ Post });
 
+  const Post = await postCollection.find({ _id: PostId }).populate("userId");
+  res.status(201).json({ Post });
 };
 
 export const getFriendsAccount = async (req: Request, res: Response) => {
@@ -457,19 +456,25 @@ export const followUser = async (req: Request, res: Response) => {
     if (!mainUser) res.json({ message: "no user", success: false });
     if (user?.public) {
       if (!user?.Followers?.includes(userId)) {
-        await user.updateOne({ $push: { Followers: userId } });
-        await mainUser?.updateOne({ $push: { Following: userId } });
+
+        await user.updateOne({ $push: { Followers: mainUser?._id  } });
+        await mainUser?.updateOne({ $push: { Following: user._id } });
         res.json({ message: "successfully followed user", success: true });
+
       } else {
-        await user.updateOne({ $pull: { Followers: userId } });
-        await mainUser?.updateOne({ $pull: { Following: userId } });
+
+        await user.updateOne({ $pull: { Followers:  mainUser?._id } });
+        await mainUser?.updateOne({ $pull: { Following: user._id } });
         res.json({ message: "successfully unFollowed user", success: true });
+
       }
     } else {
       if (user?.Followers?.includes(userId)) {
+
         await user.updateOne({ $pull: { Followers: userId } });
         await mainUser?.updateOne({ $pull: { Following: userId } });
         res.json({ message: "successfully unFollowed user", success: true });
+
       } else {
         if (!user?.Requests?.includes(userId)) {
           await user?.updateOne({ $push: { Requests: userId } });
@@ -541,7 +546,7 @@ export const acceptRequest = async (req: Request, res: Response) => {
     if (user?.Requests?.includes(acceptId)) {
       await user.updateOne({ $pull: { Requests: acceptId } });
       await user.updateOne({ $push: { Followers: acceptId } });
-      await acceptUserId?.updateOne({ $push: { Following: acceptId } });
+      await acceptUserId?.updateOne({ $push: { Following: userId } });
     }
     res.json({ message: "success accepted user ", success: true });
   } catch (error) {
@@ -670,16 +675,19 @@ export const postReplayComment = async (req: Request, res: Response) => {
       comment: newComment,
     });
     postComment.save();
-    res.json({ message: "liked comment",comments:postComment, success: true });
-
+    res.json({
+      message: "liked comment",
+      comments: postComment,
+      success: true,
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
-export const getReplayComment =async (req: Request, res: Response) => {
-  const commentId=req.params.commentId
-   try {
+export const getReplayComment = async (req: Request, res: Response) => {
+  const commentId = req.params.commentId;
+  try {
     const comments = await ReplayComment.aggregate([
       {
         $match: {
@@ -729,19 +737,14 @@ export const getReplayComment =async (req: Request, res: Response) => {
         },
       },
     ]);
-    
-    res.json({ message: "liked comment",comments:comments, success: true });
 
-   } catch (error) {
+    res.json({ message: "liked comment", comments: comments, success: true });
+  } catch (error) {
     console.log(error);
-    
-   }
-   
-}
+  }
+};
 
-
-export const likeReplayComment =async(req: Request, res: Response) => {
-
+export const likeReplayComment = async (req: Request, res: Response) => {
   const { userId, commentId } = req.body;
 
   try {
@@ -761,4 +764,110 @@ export const likeReplayComment =async(req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
+
+export const getFollowingUser = async (req: Request, res: Response) => {
+  try {
+    const user = await UserCollection.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.params.userId),
+        },
+      },
+      {
+        $project: {
+          Following: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$Following",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "Following",
+          foreignField: "_id",
+          as: "result",
+        },
+      },
+      {
+        $project: {
+          result: { $arrayElemAt: ["$result", 0] },
+        },
+      },
+      {
+        $project: {
+          "result.name": 1,
+          "result.ProfileImg":1,
+          "result.username":1,
+          "result._id":1,
+        },
+      },
+    ]);
+
+    res.json({ message: "successfully", user: user });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getFollowersUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    console.log(userId);
+    const user = await UserCollection.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.params.userId),
+        },
+      },
+      {
+        $project: {
+          Followers: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$Followers",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "Followers",
+          foreignField: "_id",
+          as: "result",
+        },
+      },
+      {
+        $project: {
+          result: { $arrayElemAt: ["$result", 0] },
+        },
+      },
+      {
+        $project: {
+          "result.name": 1,
+          "result.ProfileImg":1,
+          "result.username":1,
+          "result._id":1,
+        },
+      },
+    ]);
+
+    res.json({ message: "successfully", user: user });
+  } catch (error) {
+    console.log(error);
+  }
+};

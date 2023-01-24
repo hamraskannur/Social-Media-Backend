@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -458,13 +458,13 @@ const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.json({ message: "no user", success: false });
         if (user === null || user === void 0 ? void 0 : user.public) {
             if (!((_e = user === null || user === void 0 ? void 0 : user.Followers) === null || _e === void 0 ? void 0 : _e.includes(userId))) {
-                yield user.updateOne({ $push: { Followers: userId } });
-                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: userId } }));
+                yield user.updateOne({ $push: { Followers: mainUser === null || mainUser === void 0 ? void 0 : mainUser._id } });
+                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: user._id } }));
                 res.json({ message: "successfully followed user", success: true });
             }
             else {
-                yield user.updateOne({ $pull: { Followers: userId } });
-                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
+                yield user.updateOne({ $pull: { Followers: mainUser === null || mainUser === void 0 ? void 0 : mainUser._id } });
+                yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: user._id } }));
                 res.json({ message: "successfully unFollowed user", success: true });
             }
         }
@@ -547,7 +547,7 @@ const acceptRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if ((_h = user === null || user === void 0 ? void 0 : user.Requests) === null || _h === void 0 ? void 0 : _h.includes(acceptId)) {
             yield user.updateOne({ $pull: { Requests: acceptId } });
             yield user.updateOne({ $push: { Followers: acceptId } });
-            yield (acceptUserId === null || acceptUserId === void 0 ? void 0 : acceptUserId.updateOne({ $push: { Following: acceptId } }));
+            yield (acceptUserId === null || acceptUserId === void 0 ? void 0 : acceptUserId.updateOne({ $push: { Following: userId } }));
         }
         res.json({ message: "success accepted user ", success: true });
     }
@@ -686,7 +686,11 @@ const postReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, functi
             comment: newComment,
         });
         postComment.save();
-        res.json({ message: "liked comment", comments: postComment, success: true });
+        res.json({
+            message: "liked comment",
+            comments: postComment,
+            success: true,
+        });
     }
     catch (error) {
         console.log(error);
@@ -775,3 +779,109 @@ const likeReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.likeReplayComment = likeReplayComment;
+const getFollowingUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(req.params.userId),
+                },
+            },
+            {
+                $project: {
+                    Following: 1,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Following",
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "Following",
+                    foreignField: "_id",
+                    as: "result",
+                },
+            },
+            {
+                $project: {
+                    result: { $arrayElemAt: ["$result", 0] },
+                },
+            },
+            {
+                $project: {
+                    "result.name": 1,
+                    "result.ProfileImg": 1,
+                    "result.username": 1,
+                    "result._id": 1,
+                },
+            },
+        ]);
+        res.json({ message: "successfully", user: user });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getFollowingUser = getFollowingUser;
+const getFollowersUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.userId;
+        console.log(userId);
+        const user = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(req.params.userId),
+                },
+            },
+            {
+                $project: {
+                    Followers: 1,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$Followers",
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "Followers",
+                    foreignField: "_id",
+                    as: "result",
+                },
+            },
+            {
+                $project: {
+                    result: { $arrayElemAt: ["$result", 0] },
+                },
+            },
+            {
+                $project: {
+                    "result.name": 1,
+                    "result.ProfileImg": 1,
+                    "result.username": 1,
+                    "result._id": 1,
+                },
+            },
+        ]);
+        res.json({ message: "successfully", user: user });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getFollowersUser = getFollowersUser;

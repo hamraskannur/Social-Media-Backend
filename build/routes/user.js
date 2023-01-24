@@ -37,4 +37,6 @@ router.post("/likeMainComment", authMiddleware, user_1.likeMainComment);
 router.post('/postReplayComment', authMiddleware, user_1.postReplayComment);
 router.get('/getReplayComment/:commentId', authMiddleware, user_1.getReplayComment);
 router.post('/likeReplayComment', authMiddleware, user_1.likeReplayComment);
+router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser);
+router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
 module.exports = router;

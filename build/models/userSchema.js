@@ -5,6 +5,9 @@ const userSchema = new mongoose_1.Schema({
     username: {
         type: String,
     },
+    Address: {
+        type: String,
+    },
     name: {
         type: String,
         required: true
@@ -59,6 +62,9 @@ const userSchema = new mongoose_1.Schema({
     Following: [{
             type: mongoose_1.Schema.Types.ObjectId,
             ref: "user"
-        }]
+        }],
+    description: {
+        type: String
+    }
 });
 exports.default = (0, mongoose_1.model)('user', userSchema);

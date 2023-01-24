@@ -11,6 +11,7 @@ interface IUser extends Document {
   status:boolean
   city:string
   country:string
+  Address:string
   description:string
   ProfileImg:string
   coverImg:string
@@ -23,6 +24,9 @@ interface IUser extends Document {
 }
 const userSchema: Schema = new Schema({
   username: {
+    type: String,
+  },
+  Address:{
     type: String,
   },
   name: {
@@ -80,7 +84,10 @@ const userSchema: Schema = new Schema({
   Following:[{
     type: Schema.Types.ObjectId,
     ref:"user"
-  }]
+  }],
+  description:{
+    type:String
+  }
 
 
 })
