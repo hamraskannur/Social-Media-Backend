@@ -10,7 +10,6 @@ export const  nodemailer = async(id: string, email: string) => {
     userId: id,
     token: crypto.randomBytes(32).toString('hex')
   }).save()
-     console.log(userToken.token);
      
   const url = `${process.env.BASE_URL}user/verify/${id}/${userToken.token}`
 

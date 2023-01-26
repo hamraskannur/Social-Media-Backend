@@ -30,7 +30,9 @@ import {
   getReplayComment,
   likeReplayComment,
   getFollowingUser,
-  getFollowersUser
+  getFollowersUser,
+  savePost,
+  getSavedPost
 } from "../controllers/user";
 const router: Router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -97,5 +99,8 @@ router.get('/getFollowingUser/:userId' , authMiddleware,getFollowingUser)
 
 router.get('/getFollowersUser/:userId' , authMiddleware,getFollowersUser)
 
+router.put('/savePost',authMiddleware,savePost)
+
+router.get('/getSavedPost/:userId',authMiddleware,getSavedPost)
 
 module.exports = router;

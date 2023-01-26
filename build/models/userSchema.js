@@ -53,15 +53,19 @@ const userSchema = new mongoose_1.Schema({
     },
     Requests: [{
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: "user"
+            ref: "post"
         }],
     Followers: [{
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: "user"
+            ref: "post"
         }],
     Following: [{
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: "user"
+            ref: "post"
+        }],
+    saved: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "post"
         }],
     description: {
         type: String

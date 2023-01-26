@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.getSavedPost = exports.savePost = exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -885,3 +885,89 @@ const getFollowersUser = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getFollowersUser = getFollowersUser;
+const savePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    try {
+        const { postId, userId } = req.body;
+        const user = yield userSchema_1.default.findById(userId);
+        if (user) {
+            if (!user.saved.includes(postId)) {
+                yield user.updateOne({
+                    $push: { saved: new mongoose_1.default.Types.ObjectId(postId) },
+                });
+                res.json({ Message: "post saved successfully", success: true });
+            }
+            else {
+                yield user.updateOne({
+                    $pull: { saved: new mongoose_1.default.Types.ObjectId(postId) },
+                });
+                res.json({ Message: "post unsaved successfully", success: true });
+            }
+        }
+        else {
+            res.json({ noUser: true });
+        }
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+});
+exports.savePost = savePost;
+const getSavedPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.userId;
+        const result = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(userId),
+                },
+            },
+            {
+                $project: {
+                    password: 0,
+                },
+            },
+            {
+                $unwind: {
+                    path: "$saved",
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+            {
+                $lookup: {
+                    from: "posts",
+                    localField: "saved",
+                    foreignField: "_id",
+                    as: "post",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$post",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "post.userId",
+                    foreignField: "_id",
+                    as: "userId",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$userId",
+                },
+            },
+        ]);
+        res.status(200).json(result);
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+});
+exports.getSavedPost = getSavedPost;

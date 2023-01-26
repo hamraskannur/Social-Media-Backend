@@ -20,7 +20,7 @@ interface IUser extends Document {
   Requests: string[];
   Followers: string[];
   Following: string[];
-
+  saved:string[];
 }
 const userSchema: Schema = new Schema({
   username: {
@@ -75,15 +75,19 @@ const userSchema: Schema = new Schema({
   },
   Requests:[{
     type: Schema.Types.ObjectId,
-    ref:"user"
+    ref:"post"
   }],
   Followers:[{
     type: Schema.Types.ObjectId,
-    ref:"user"
+    ref:"post"
   }],
   Following:[{
     type: Schema.Types.ObjectId,
-    ref:"user"
+    ref:"post"
+  }],
+  saved:[{
+    type: Schema.Types.ObjectId,
+    ref:"post"
   }],
   description:{
     type:String

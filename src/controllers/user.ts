@@ -456,25 +456,19 @@ export const followUser = async (req: Request, res: Response) => {
     if (!mainUser) res.json({ message: "no user", success: false });
     if (user?.public) {
       if (!user?.Followers?.includes(userId)) {
-
-        await user.updateOne({ $push: { Followers: mainUser?._id  } });
+        await user.updateOne({ $push: { Followers: mainUser?._id } });
         await mainUser?.updateOne({ $push: { Following: user._id } });
         res.json({ message: "successfully followed user", success: true });
-
       } else {
-
-        await user.updateOne({ $pull: { Followers:  mainUser?._id } });
+        await user.updateOne({ $pull: { Followers: mainUser?._id } });
         await mainUser?.updateOne({ $pull: { Following: user._id } });
         res.json({ message: "successfully unFollowed user", success: true });
-
       }
     } else {
       if (user?.Followers?.includes(userId)) {
-
         await user.updateOne({ $pull: { Followers: userId } });
         await mainUser?.updateOne({ $pull: { Following: userId } });
         res.json({ message: "successfully unFollowed user", success: true });
-
       } else {
         if (!user?.Requests?.includes(userId)) {
           await user?.updateOne({ $push: { Requests: userId } });
@@ -805,9 +799,9 @@ export const getFollowingUser = async (req: Request, res: Response) => {
       {
         $project: {
           "result.name": 1,
-          "result.ProfileImg":1,
-          "result.username":1,
-          "result._id":1,
+          "result.ProfileImg": 1,
+          "result.username": 1,
+          "result._id": 1,
         },
       },
     ]);
@@ -859,9 +853,9 @@ export const getFollowersUser = async (req: Request, res: Response) => {
       {
         $project: {
           "result.name": 1,
-          "result.ProfileImg":1,
-          "result.username":1,
-          "result._id":1,
+          "result.ProfileImg": 1,
+          "result.username": 1,
+          "result._id": 1,
         },
       },
     ]);
@@ -869,5 +863,89 @@ export const getFollowersUser = async (req: Request, res: Response) => {
     res.json({ message: "successfully", user: user });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const savePost = async (req: Request, res: Response) => {
+  console.log(req.body);
+  try {
+    const { postId, userId } = req.body;
+    const user = await UserCollection.findById(userId);
+    if (user) {
+      if (!user.saved.includes(postId)) {
+        await user.updateOne({
+          $push: { saved: new mongoose.Types.ObjectId(postId) },
+        });
+        res.json({ Message: "post saved successfully", success: true });
+      } else {
+        await user.updateOne({
+          $pull: { saved: new mongoose.Types.ObjectId(postId) },
+        });
+        res.json({ Message: "post unsaved successfully", success: true });
+      }
+    } else {
+      res.json({ noUser: true });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getSavedPost = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const result = await UserCollection.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $project: {
+          password:  0,
+
+        },
+      },
+      {
+        $unwind: {
+          path: "$saved",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "saved",
+          foreignField: "_id",
+          as: "post",
+        },
+      },
+      {
+        $unwind: {
+          path: "$post",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "post.userId",
+          foreignField: "_id",
+          as: "userId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userId",
+        },
+      },
+    ]);
+    
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json(error);
   }
 };
