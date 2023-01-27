@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePost = exports.getSavedPost = exports.savePost = exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -978,6 +978,22 @@ const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json({ success: true, message: "deleted post" });
     }
     catch (error) {
+        console.log(error);
     }
 });
 exports.deletePost = deletePost;
+const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const postData = req.body;
+        yield postSchema_1.default.updateOne({ _id: req.body.postId }, {
+            $set: {
+                description: req.body.newDescription,
+            },
+        });
+        res.status(200).json({ success: true, newDescription: req.body.newDescription, message: "Edited post" });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.editPost = editPost;

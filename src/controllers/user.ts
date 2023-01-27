@@ -952,10 +952,26 @@ export const getSavedPost = async (req: Request, res: Response) => {
 export const deletePost = async (req: Request, res: Response) => {
   const postId = req.params.postId;
   try {
-
     const response = await postCollection.findByIdAndDelete({ _id: postId });
-   res.status(200).json({success: true ,message:"deleted post"})
+    res.status(200).json({ success: true, message: "deleted post" });
   } catch (error) {
+    console.log(error);
+  }
+};
 
+export const editPost = async (req: Request, res: Response) => {
+  try {
+    const postData = req.body;
+         await postCollection.updateOne(
+      { _id: req.body.postId },
+      {
+        $set: {
+          description: req.body.newDescription,
+        },
+      }
+    );
+    res.status(200).json({ success: true,newDescription:req.body.newDescription, message: "Edited post" });
+  } catch (error) {
+    console.log(error);
   }
 };
