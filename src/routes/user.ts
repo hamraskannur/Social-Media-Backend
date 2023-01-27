@@ -4,7 +4,7 @@ import {
   postSignup,
   verify,userLogin,googleLogin,addPost,getMyPost,getUserData,getAllPosts,getOnePost,getFriendsAccount,likePostReq,getComment,getUserAllPost,postComment,updateUserData,followUser,
   getAllRequest,acceptRequest,deleteRequests,createChat,getChat,chatFind,addMessage,getMessages,likeMainComment,postReplayComment,getReplayComment,likeReplayComment,
-  getFollowingUser,getFollowersUser,savePost,deletePost,getSavedPost,editPost
+  getFollowingUser,getFollowersUser,savePost,deletePost,getSavedPost,editPost,reportPost
 } from "../controllers/user";
 const router: Router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -78,5 +78,7 @@ router.get('/getSavedPost/:userId',authMiddleware,getSavedPost)
 router.delete('/deletePost/:postId',authMiddleware,deletePost)
 
 router.put('/editPost',authMiddleware,editPost)
+
+router.put('/reportPost',authMiddleware,reportPost)
 
 module.exports = router;

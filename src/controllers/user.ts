@@ -12,6 +12,7 @@ import chatCollection from "../models/chatSchema";
 import ReplayComment from "../models/ReplayComment";
 import token from "../models/token";
 import { nodemailer } from "../utils/nodemailer";
+import ReportSchema from "../models/ReportSchema";
 const saltRounds = 10;
 
 export const postSignup = async (
@@ -962,7 +963,7 @@ export const deletePost = async (req: Request, res: Response) => {
 export const editPost = async (req: Request, res: Response) => {
   try {
     const postData = req.body;
-         await postCollection.updateOne(
+    await postCollection.updateOne(
       { _id: req.body.postId },
       {
         $set: {
@@ -970,8 +971,48 @@ export const editPost = async (req: Request, res: Response) => {
         },
       }
     );
-    res.status(200).json({ success: true,newDescription:req.body.newDescription, message: "Edited post" });
+    res.status(200).json({
+      success: true,
+      newDescription: req.body.newDescription,
+      message: "Edited post",
+    });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const reportPost = async (req: Request, res: Response) => {
+  console.log(req.body.newDescription);
+  const report = await ReportSchema.findOne({
+    PostId: new mongoose.Types.ObjectId(req.body.postId)
+  });
+  if (report) {
+      report?.userText?.push({
+        userId: new mongoose.Types.ObjectId(req.body.userId),
+        text:req.body.newDescription,
+      });
+      report.save();
+      res.status(200).json({
+        success: true,
+        newDescription:req.body.newDescription,
+        message: "report post",
+      });
+    
+  } else {
+    await new ReportSchema({
+      PostId: req.body.postId,
+      userText: [
+        {
+          userId: new mongoose.Types.ObjectId(req.body.userId),
+          text:req.body.newDescription,
+        },
+      ],
+    }).save();
+
+    res.status(200).json({
+      success: true,
+      newDescription:req.body.newDescription,
+      message: "report post",
+    });
   }
 };

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.reportPost = exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.getFollowersUser = exports.getFollowingUser = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserAllPost = exports.getUserData = exports.getComment = exports.postComment = exports.likePostReq = exports.googleLogin = exports.getFriendsAccount = exports.getOnePost = exports.getAllPosts = exports.getMyProfile = exports.getMyPost = exports.addPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -24,6 +24,7 @@ const chatSchema_1 = __importDefault(require("../models/chatSchema"));
 const ReplayComment_1 = __importDefault(require("../models/ReplayComment"));
 const token_1 = __importDefault(require("../models/token"));
 const nodemailer_1 = require("../utils/nodemailer");
+const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const saltRounds = 10;
 const postSignup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userSignup = {
@@ -990,10 +991,50 @@ const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 description: req.body.newDescription,
             },
         });
-        res.status(200).json({ success: true, newDescription: req.body.newDescription, message: "Edited post" });
+        res.status(200).json({
+            success: true,
+            newDescription: req.body.newDescription,
+            message: "Edited post",
+        });
     }
     catch (error) {
         console.log(error);
     }
 });
 exports.editPost = editPost;
+const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _m;
+    console.log(req.body.newDescription);
+    const report = yield ReportSchema_1.default.findOne({
+        PostId: new mongoose_1.default.Types.ObjectId(req.body.postId)
+    });
+    if (report) {
+        (_m = report === null || report === void 0 ? void 0 : report.userText) === null || _m === void 0 ? void 0 : _m.push({
+            userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
+            text: req.body.newDescription,
+        });
+        report.save();
+        res.status(200).json({
+            success: true,
+            newDescription: req.body.newDescription,
+            message: "report post",
+        });
+    }
+    else {
+        yield new ReportSchema_1.default({
+            PostId: req.body.postId,
+            userText: [
+                {
+                    userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
+                    text: req.body.newDescription,
+                },
+            ],
+        }).save();
+        res.status(200).json({
+            success: true,
+            newDescription: req.body.newDescription,
+            message: "report post",
+        });
+    }
+});
+exports.reportPost = reportPost;

@@ -43,4 +43,5 @@ router.put('/savePost', authMiddleware, user_1.savePost);
 router.get('/getSavedPost/:userId', authMiddleware, user_1.getSavedPost);
 router.delete('/deletePost/:postId', authMiddleware, user_1.deletePost);
 router.put('/editPost', authMiddleware, user_1.editPost);
+router.put('/reportPost', authMiddleware, user_1.reportPost);
 module.exports = router;
