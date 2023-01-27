@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/comma-spacing */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, response, Response } from "express";
 import mongoose from "mongoose";
 const bcrypt = require("bcrypt");
 import { generateToken } from "../utils/jws";
@@ -902,8 +902,7 @@ export const getSavedPost = async (req: Request, res: Response) => {
       },
       {
         $project: {
-          password:  0,
-
+          password: 0,
         },
       },
       {
@@ -943,9 +942,20 @@ export const getSavedPost = async (req: Request, res: Response) => {
         },
       },
     ]);
-    
+
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json(error);
+  }
+};
+
+export const deletePost = async (req: Request, res: Response) => {
+  const postId = req.params.postId;
+  try {
+
+    const response = await postCollection.findByIdAndDelete({ _id: postId });
+   res.status(200).json({success: true ,message:"deleted post"})
+  } catch (error) {
+
   }
 };

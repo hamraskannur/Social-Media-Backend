@@ -2,37 +2,9 @@
 import express, { Router } from "express";
 import {
   postSignup,
-  verify,
-  userLogin,
-  googleLogin,
-  addPost,
-  getMyPost,
-  getUserData,
-  getAllPosts,
-  getOnePost,
-  getFriendsAccount,
-  likePostReq,
-  getComment,
-  getUserAllPost,
-  postComment,
-  updateUserData,
-  followUser,
-  getAllRequest,
-  acceptRequest,
-  deleteRequests,
-  createChat,
-  getChat,
-  chatFind,
-  addMessage,
-  getMessages,
-  likeMainComment,
-  postReplayComment,
-  getReplayComment,
-  likeReplayComment,
-  getFollowingUser,
-  getFollowersUser,
-  savePost,
-  getSavedPost
+  verify,userLogin,googleLogin,addPost,getMyPost,getUserData,getAllPosts,getOnePost,getFriendsAccount,likePostReq,getComment,getUserAllPost,postComment,updateUserData,followUser,
+  getAllRequest,acceptRequest,deleteRequests,createChat,getChat,chatFind,addMessage,getMessages,likeMainComment,postReplayComment,getReplayComment,likeReplayComment,
+  getFollowingUser,getFollowersUser,savePost,deletePost,getSavedPost
 } from "../controllers/user";
 const router: Router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -102,5 +74,7 @@ router.get('/getFollowersUser/:userId' , authMiddleware,getFollowersUser)
 router.put('/savePost',authMiddleware,savePost)
 
 router.get('/getSavedPost/:userId',authMiddleware,getSavedPost)
+
+router.delete('/deletePost/:postId',authMiddleware,deletePost)
 
 module.exports = router;
