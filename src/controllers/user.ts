@@ -142,7 +142,7 @@ export const userLogin = async (req: Request, res: Response) => {
           } else {
             res.send({
               message: "Admin blocked please sent email from admin",
-              Status: true,
+              Status: false,
             });
           }
         } else {
@@ -1016,3 +1016,4 @@ export const reportPost = async (req: Request, res: Response) => {
     });
   }
 };
+

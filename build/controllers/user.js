@@ -135,7 +135,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     else {
                         res.send({
                             message: "Admin blocked please sent email from admin",
-                            Status: true,
+                            Status: false,
                         });
                     }
                 }

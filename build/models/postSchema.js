@@ -33,6 +33,9 @@ const postSchema = new mongoose_1.Schema({
     description: {
         type: String,
     },
+    status: {
+        type: Boolean,
+    },
     img: [{
             type: String
         }],

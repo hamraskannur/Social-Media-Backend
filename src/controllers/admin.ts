@@ -3,7 +3,9 @@ import { Request, Response } from "express";
 import { generateToken } from "../utils/jws";
 import userCollection from "../models/userSchema";
 import adminSchema from "../models/adminSchema";
+import postCollection from "../models/postSchema";
 const bcrypt = require("bcrypt");
+import ReportSchema from "../models/ReportSchema";
 
 export const adminLogin = async (req: Request, res: Response) => {
   const userSignUpp: { Status: boolean; message: string; token: string } = {
@@ -65,6 +67,35 @@ export const changeStatus = (req: Request, res: Response) => {
       .then((date) => {
         res.status(200).send({ Status: true });
       });
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const getAllBlockPost = async (req: Request, res: Response) => {
+  try {
+    const allPost = await ReportSchema.find()
+      .populate("PostId")
+      .populate("userText.userId");
+    res.status(200).send({ Status: true, Posts: allPost });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const blockPost = async (req: Request, res: Response) => {
+  try {
+    const {PostId, status} =req.body
+    await postCollection.findByIdAndUpdate(
+      {
+        PostId,
+      },
+      {
+        $set: {
+          status: status,
+        },
+      }
+    );
+    res.status(200).send({ Status: true });
   } catch (error) {
     console.log(error);
   }

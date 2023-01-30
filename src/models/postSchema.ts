@@ -5,6 +5,7 @@ export  interface AddPost extends Document{
     description: string;
     img: string[];
     likes: string[];
+    status:Boolean
 }
 
 const postSchema:Schema=new Schema({
@@ -15,6 +16,9 @@ const postSchema:Schema=new Schema({
       },
       description:{
         type: String,
+    },
+    status:{
+        type:Boolean,
     },
     img: [{
         type: String

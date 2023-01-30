@@ -81,4 +81,5 @@ router.put('/editPost',authMiddleware,editPost)
 
 router.put('/reportPost',authMiddleware,reportPost)
 
+
 module.exports = router;

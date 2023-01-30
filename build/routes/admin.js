@@ -11,4 +11,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/login', admin_1.adminLogin);
 router.get('/getAllUser', admin_1.getAllUser);
 router.get('/changeStatus/:Status/:userId', admin_1.changeStatus);
+router.get('/getAllBlockPost', admin_1.getAllBlockPost);
+router.put('/blockPost/', admin_1.blockPost);
 module.exports = router;
