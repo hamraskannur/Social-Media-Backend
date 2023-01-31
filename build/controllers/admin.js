@@ -16,7 +16,7 @@ exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.ge
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
-const postSchema_1 = __importDefault(require("../models/postSchema"));
+const photoSchema_1 = __importDefault(require("../models/photoSchema"));
 const bcrypt = require("bcrypt");
 const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -98,7 +98,7 @@ exports.getAllReportPost = getAllReportPost;
 const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { postId, status } = req.body;
-        yield postSchema_1.default.findByIdAndUpdate({
+        yield photoSchema_1.default.findByIdAndUpdate({
             _id: new mongoose_1.default.Types.ObjectId(postId)
         }, {
             $set: {

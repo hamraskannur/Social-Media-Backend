@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import express, { Router } from "express";
+import { Router } from "express";
 import {
   postSignup,verify,userLogin,googleLogin,getMyPost,getUserData,getFriendsAccount,updateUserData,followUser,
   getAllRequest,acceptRequest,deleteRequests,getFollowingUser,getFollowersUser
 } from "../controllers/user";
 
-const router: Router = express.Router();
+const router: Router = Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/register", postSignup);

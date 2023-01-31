@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { generateToken } from "../utils/jws";
 import userCollection from "../models/userSchema";
 import adminSchema from "../models/adminSchema";
-import postCollection from "../models/postSchema";
+import postCollection from "../models/photoSchema";
 const bcrypt = require("bcrypt");
 import ReportSchema from "../models/ReportSchema";
 import mongoose from "mongoose";

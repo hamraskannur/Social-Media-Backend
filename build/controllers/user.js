@@ -17,7 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
-const postSchema_1 = __importDefault(require("../models/postSchema"));
+const photoSchema_1 = __importDefault(require("../models/photoSchema"));
 const token_1 = __importDefault(require("../models/token"));
 const nodemailer_1 = require("../utils/nodemailer");
 const saltRounds = 10;
@@ -154,7 +154,7 @@ exports.userLogin = userLogin;
 const getMyPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
-        const allPost = yield postSchema_1.default.find({ userId });
+        const allPost = yield photoSchema_1.default.find({ userId });
         res.status(201).json({ status: true, allPost });
     }
     catch (error) {
@@ -165,7 +165,7 @@ exports.getMyPost = getMyPost;
 const getMyProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
-        const useData = yield postSchema_1.default
+        const useData = yield photoSchema_1.default
             .find({ userId: userId })
             .populate("userId");
         res.status(201).json({ useData });

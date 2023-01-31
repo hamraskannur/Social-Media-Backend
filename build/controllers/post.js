@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reportPost = exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getUserAllPost = exports.getComment = exports.postComment = exports.likePostReq = exports.getOnePost = exports.getAllPosts = exports.addPost = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const postSchema_1 = __importDefault(require("../models/postSchema"));
+const photoSchema_1 = __importDefault(require("../models/photoSchema"));
 const CommentSchema_1 = __importDefault(require("../models/CommentSchema"));
 const ReplayComment_1 = __importDefault(require("../models/ReplayComment"));
 const userSchema_1 = __importDefault(require("../models/userSchema"));
@@ -22,7 +22,7 @@ const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imageLinks, description, userId } = req.body;
-        const post = yield new postSchema_1.default({
+        const post = yield new photoSchema_1.default({
             userId,
             img: imageLinks,
             description,
@@ -36,7 +36,7 @@ const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addPost = addPost;
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const AllPosts = yield postSchema_1.default.find().populate("userId");
+        const AllPosts = yield photoSchema_1.default.find().populate("userId");
         res.status(201).json({ AllPosts });
     }
     catch (error) {
@@ -46,7 +46,7 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllPosts = getAllPosts;
 const getOnePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, PostId } = req.params;
-    const Post = yield postSchema_1.default.find({ _id: PostId }).populate("userId");
+    const Post = yield photoSchema_1.default.find({ _id: PostId }).populate("userId");
     res.status(201).json({ Post });
 });
 exports.getOnePost = getOnePost;
@@ -54,7 +54,7 @@ const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const userId = req.body.userId;
         const postId = req.params.postId;
-        const post = yield postSchema_1.default.findById(postId);
+        const post = yield photoSchema_1.default.findById(postId);
         if (!post) {
             return res.json({ Message: "post not fount", success: false });
         }
@@ -77,7 +77,7 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const userId = req.body.userId;
     const postId = req.params.postId;
     try {
-        const post = yield postSchema_1.default.findById(postId);
+        const post = yield photoSchema_1.default.findById(postId);
         if (!post) {
             return res.json({ message: "post not found", success: false });
         }
@@ -168,7 +168,7 @@ exports.getComment = getComment;
 const getUserAllPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        const AllPosts = yield postSchema_1.default
+        const AllPosts = yield photoSchema_1.default
             .find({ userId: userId })
             .populate("userId");
         res.json({
@@ -396,7 +396,7 @@ exports.getSavedPost = getSavedPost;
 const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postId = req.params.postId;
     try {
-        const response = yield postSchema_1.default.findByIdAndDelete({ _id: postId });
+        const response = yield photoSchema_1.default.findByIdAndDelete({ _id: postId });
         res.status(200).json({ success: true, message: "deleted post" });
     }
     catch (error) {
@@ -407,7 +407,7 @@ exports.deletePost = deletePost;
 const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const postData = req.body;
-        yield postSchema_1.default.updateOne({ _id: req.body.postId }, {
+        yield photoSchema_1.default.updateOne({ _id: req.body.postId }, {
             $set: {
                 description: req.body.newDescription,
             },

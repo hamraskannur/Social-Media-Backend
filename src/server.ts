@@ -35,10 +35,11 @@ io.on("connection", (socket: any) => {
   });
 });
 
-const adminRouter = require("./routes/admin");
-const userRouter = require("./routes/user");
-const postRouter =require("./routes/post")
-const chatRouter =require("./routes/chat")
+const adminRouter = require("./routes/adminRoutes");
+const userRouter = require("./routes/userRoutes");
+const postRouter =require("./routes/postRoutes")
+const chatRouter =require("./routes/chatRoutes")
+const videoRouter =require('./routes/videoRoutes')
 
 const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/connects");
@@ -61,6 +62,7 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/post", postRouter)
 app.use('/chat',chatRouter)
+app.use('/video',videoRouter)
 
 const port = 3008;
 

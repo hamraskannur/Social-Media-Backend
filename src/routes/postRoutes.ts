@@ -1,9 +1,9 @@
-import express from 'express'
+import { Router } from 'express'
 import { addPost, getAllPosts, getOnePost, likePostReq, postComment, getComment, getUserAllPost, likeMainComment,
      postReplayComment, getReplayComment, likeReplayComment, savePost, getSavedPost, deletePost, editPost, reportPost} from '../controllers/post'
 const authMiddleware = require("../middleware/authMiddleware");
 
-const router = express.Router()
+const router = Router()
 
 router.post("/addPost", authMiddleware, addPost);
 

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import express from 'express'
+import { Router } from 'express'
 import { adminLogin,getAllUser,changeStatus,getAllReportPost,blockPost } from '../controllers/admin'
 import { getFriendsAccount } from "../controllers/user";
 import { getUserAllPost, getComment, getReplayComment } from "../controllers/post";
 
-const router = express.Router() 
+const router = Router() 
 const authMiddleware = require('../middleware/authMiddleware')
 
 router.post('/login', adminLogin)

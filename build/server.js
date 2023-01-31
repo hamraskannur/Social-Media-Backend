@@ -36,10 +36,11 @@ io.on("connection", (socket) => {
         io.emit("get-user", activeUser);
     });
 });
-const adminRouter = require("./routes/admin");
-const userRouter = require("./routes/user");
-const postRouter = require("./routes/post");
-const chatRouter = require("./routes/chat");
+const adminRouter = require("./routes/adminRoutes");
+const userRouter = require("./routes/userRoutes");
+const postRouter = require("./routes/postRoutes");
+const chatRouter = require("./routes/chatRoutes");
+const videoRouter = require('./routes/videoRoutes');
 const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/connects");
 app.use(express_1.default.json());
@@ -55,6 +56,7 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/post", postRouter);
 app.use('/chat', chatRouter);
+app.use('/video', videoRouter);
 const port = 3008;
 app.listen(port, () => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

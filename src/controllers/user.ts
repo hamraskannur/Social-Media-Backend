@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const bcrypt = require("bcrypt");
 import { generateToken } from "../utils/jws";
 import UserCollection from "../models/userSchema";
-import postCollection from "../models/postSchema";
+import postCollection from "../models/photoSchema";
 import token from "../models/token";
 import { nodemailer } from "../utils/nodemailer";
 

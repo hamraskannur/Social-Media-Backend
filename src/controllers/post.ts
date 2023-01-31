@@ -1,6 +1,6 @@
 import { NextFunction, Request, response, Response } from "express";
 import mongoose from "mongoose";
-import postCollection from "../models/postSchema";
+import postCollection from "../models/photoSchema";
 import commentCollection from "../models/CommentSchema";
 import ReplayComment from "../models/ReplayComment";
 import UserCollection from "../models/userSchema";
