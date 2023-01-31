@@ -19,6 +19,7 @@ const postSchema:Schema=new Schema({
     },
     status:{
         type:Boolean,
+        default:true
     },
     img: [{
         type: String

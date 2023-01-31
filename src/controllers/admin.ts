@@ -6,6 +6,7 @@ import adminSchema from "../models/adminSchema";
 import postCollection from "../models/postSchema";
 const bcrypt = require("bcrypt");
 import ReportSchema from "../models/ReportSchema";
+import mongoose from "mongoose";
 
 export const adminLogin = async (req: Request, res: Response) => {
   const userSignUpp: { Status: boolean; message: string; token: string } = {
@@ -75,7 +76,8 @@ export const getAllReportPost = async (req: Request, res: Response) => {
   try {
     const allPost = await ReportSchema.find()
       .populate("PostId")
-      .populate("userText.userId");
+      .populate("userText.userId")    
+      
     res.status(200).send({ Status: true, Posts: allPost });
   } catch (error) {
     console.log(error);
@@ -83,11 +85,12 @@ export const getAllReportPost = async (req: Request, res: Response) => {
 };
 
 export const blockPost = async (req: Request, res: Response) => {
-  try {
-    const {PostId, status} =req.body
+  try {    
+    const {postId, status} =req.body
+    
     await postCollection.findByIdAndUpdate(
       {
-        PostId,
+       _id:new mongoose.Types.ObjectId(postId)
       },
       {
         $set: {

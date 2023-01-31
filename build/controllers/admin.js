@@ -19,6 +19,7 @@ const adminSchema_1 = __importDefault(require("../models/adminSchema"));
 const postSchema_1 = __importDefault(require("../models/postSchema"));
 const bcrypt = require("bcrypt");
 const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const userSignUpp = {
@@ -96,9 +97,9 @@ const getAllReportPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getAllReportPost = getAllReportPost;
 const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { PostId, status } = req.body;
+        const { postId, status } = req.body;
         yield postSchema_1.default.findByIdAndUpdate({
-            PostId,
+            _id: new mongoose_1.default.Types.ObjectId(postId)
         }, {
             $set: {
                 status: status,
