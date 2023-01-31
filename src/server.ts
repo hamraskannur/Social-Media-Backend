@@ -38,6 +38,7 @@ io.on("connection", (socket: any) => {
 const adminRouter = require("./routes/admin");
 const userRouter = require("./routes/user");
 const postRouter =require("./routes/post")
+const chatRouter =require("./routes/chat")
 
 const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/connects");
@@ -59,6 +60,7 @@ dbConnect;
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/post", postRouter)
+app.use('/chat',chatRouter)
 
 const port = 3008;
 

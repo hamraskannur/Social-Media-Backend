@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blockPost = exports.getAllBlockPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
+exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
@@ -82,7 +82,7 @@ const changeStatus = (req, res) => {
     }
 };
 exports.changeStatus = changeStatus;
-const getAllBlockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllReportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allPost = yield ReportSchema_1.default.find()
             .populate("PostId")
@@ -93,7 +93,7 @@ const getAllBlockPost = (req, res) => __awaiter(void 0, void 0, void 0, function
         console.log(error);
     }
 });
-exports.getAllBlockPost = getAllBlockPost;
+exports.getAllReportPost = getAllReportPost;
 const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { PostId, status } = req.body;

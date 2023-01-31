@@ -71,7 +71,7 @@ export const changeStatus = (req: Request, res: Response) => {
     console.log(error);
   }
 };
-export const getAllBlockPost = async (req: Request, res: Response) => {
+export const getAllReportPost = async (req: Request, res: Response) => {
   try {
     const allPost = await ReportSchema.find()
       .populate("PostId")
