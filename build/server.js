@@ -32,7 +32,6 @@ io.on("connection", (socket) => {
     });
     socket.on("disconnect", () => {
         activeUser = activeUser.filter((user) => user.socketId !== socket.id);
-        console.log("user disconnect ", activeUser);
         io.emit("get-user", activeUser);
     });
 });

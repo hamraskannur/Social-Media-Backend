@@ -20,7 +20,9 @@ export const uploadVideo = async (req: Request, res: Response) => {
 
 export const getAllVideo = async (req: Request, res: Response) => {
   try {
-    const AllPosts = await videoSchema.find().populate("userId");
+    const AllPosts = await videoSchema
+      .find()
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
     res.status(201).json({ AllPosts });
   } catch (error) {
     console.log(error);
@@ -61,60 +63,16 @@ export const deleteShort = async (req: Request, res: Response) => {
 export const getShortComment = async (req: Request, res: Response) => {
   try {
     const postId = req.params.postId;
-    console.log(postId);
-    const comments = await videoCommentSchema.find({postId:new mongoose.Types.ObjectId(postId)}).populate('userId').populate('replayComment.userId')
-   console.log(comments);
-   
-    // const comments = await videoCommentSchema.aggregate([
-    //   {
-    //     $match: {
-    //       postId: new mongoose.Types.ObjectId(postId),
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "userId",
-    //       foreignField: "_id",
-    //       as: "author",
-    //     },
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$author",
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       userId: 1,
-    //       postId: 1,
-    //       comment: 1,
-    //       likes: 1,
-    //       replayComment:1,
-    //       createdAt: 1,
-    //       "author.username": 1,
-    //       "author.ProfileImg": 1,
-    //     },
-    //   },
-    //   {
-    //     $replaceRoot: {
-    //       newRoot: {
-    //         $mergeObjects: ["$$ROOT", "$author"],
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       author: 0,
-    //     },
-    //   },
-    //   {
-    //     $sort: {
-    //       createdAt: -1,
-    //     },
-    //   },
-    // ]);
+
+    const comments = await videoCommentSchema
+      .find({ postId: new mongoose.Types.ObjectId(postId) })
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 })
+      .populate("replayComment.userId", {
+        username: 1,
+        name: 1,
+        _id: 1,
+        ProfileImg: 1,
+      });
 
     return res.json({
       message: "comments fetched successfully",
@@ -142,15 +100,14 @@ export const postShortsComment = async (req: Request, res: Response) => {
     });
     await postComment.save();
 
-    await videoCommentSchema.populate(postComment, {
+    const newComment = await videoCommentSchema.populate(postComment, {
       path: "userId",
-      select: { username: 1 },
     });
 
     res.json({
       message: "commented posted successfully",
       success: true,
-      comment: postComment,
+      comment: newComment,
     });
   } catch (error) {
     console.log(error);
@@ -186,19 +143,53 @@ export const shortsReplayComment = async (req: Request, res: Response) => {
       _id: new mongoose.Types.ObjectId(commentId),
     });
     if (comment) {
-      comment?.replayComment?.push({
-          userId,
-          comment: newComment,
-          likes: []
+      const index = await comment?.replayComment?.push({
+        userId,
+        comment: newComment,
+        likes: [],
       });
-      comment.save();
+      await await comment.save();
     }
+    const addNewComment = await videoCommentSchema
+      .findById(comment)
+      .populate("replayComment.userId");
+
     res.json({
       message: "liked comment",
-      comments: newComment,
+      comments: addNewComment?.replayComment,
       success: true,
     });
   } catch (error) {
     console.log(error);
   }
 };
+
+export const likeShortsReplayComment = async (req: Request, res: Response) => {
+  const { secondCommentId, userId, commentId, like } = req.body;
+  console.log(secondCommentId, userId, commentId, like);
+
+  try {
+    if (!like) {
+      await videoCommentSchema.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(commentId),
+          "replayComment._id": new mongoose.Types.ObjectId(secondCommentId),
+        },
+        { $set: { "replayComment.$.likes": [userId] } }
+      );
+      res.status(200).json({ message: "liked comment", success: true });
+    } else {
+      await videoCommentSchema.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(commentId),
+          "replayComment._id": new mongoose.Types.ObjectId(secondCommentId),
+        },
+        { $unset: { "replayComment.$.likes": [userId] } }
+      );
+      res.status(200).json({ message: "unLiked comment", success: true });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+

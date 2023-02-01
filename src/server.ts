@@ -11,14 +11,13 @@ const io = require("socket.io")(8800, {
 let activeUser: any[] = [];
 
 io.on("connection", (socket: any) => {
-  socket.on("new-user-add", (newUserId: string) => {
+  socket.on("new-user-add", (newUserId: string) => { 
     if (!activeUser.some((user) => user.userId === newUserId)) {
       activeUser.push({
         userId: newUserId,
         socketId: socket.id,
       });
-    }
-
+    }    
     io.emit("get-user", activeUser);
   });
   socket.on("send-message", (data: any) => {
@@ -30,7 +29,6 @@ io.on("connection", (socket: any) => {
   });
   socket.on("disconnect", () => {
     activeUser = activeUser.filter((user) => user.socketId !== socket.id);
-    console.log("user disconnect ", activeUser);
     io.emit("get-user", activeUser);
   });
 });

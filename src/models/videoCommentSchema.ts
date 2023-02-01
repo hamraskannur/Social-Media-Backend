@@ -6,7 +6,7 @@ export interface Comment extends Document {
   comment: string;
   likes: string[];
   replayComment:[{
-    userId:String,
+    userId:mongoose.Types.ObjectId,
     comment:String,
     likes: string[];
 }]
