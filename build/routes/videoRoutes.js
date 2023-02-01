@@ -13,4 +13,6 @@ router.post("/postShortsComment/:postId", authMiddleware, video_1.postShortsComm
 router.post("/likeShortsMainComment", authMiddleware, video_1.likeShortsMainComment);
 router.post('/shortsReplayComment', authMiddleware, video_1.shortsReplayComment);
 router.post('/likeShortsReplayComment', authMiddleware, video_1.likeShortsReplayComment);
+router.put('/editShorts', authMiddleware, video_1.editShorts);
+router.get("/getUserAllShorts/:userId", authMiddleware, video_1.getUserAllShorts);
 module.exports = router;

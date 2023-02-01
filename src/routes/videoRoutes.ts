@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { uploadVideo, getAllVideo, likeShortReq, likeShortsReplayComment, deleteShort, shortsReplayComment, getShortComment, postShortsComment, likeShortsMainComment } from "../controllers/video";
+import { uploadVideo, getAllVideo, likeShortReq, likeShortsReplayComment, deleteShort, shortsReplayComment,
+     getShortComment, postShortsComment, likeShortsMainComment, editShorts, getUserAllShorts } from "../controllers/video";
 const router: Router = Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -21,5 +22,9 @@ router.post("/likeShortsMainComment", authMiddleware,likeShortsMainComment)
 router.post('/shortsReplayComment',authMiddleware,shortsReplayComment)
 
 router.post('/likeShortsReplayComment',authMiddleware,likeShortsReplayComment)
+
+router.put('/editShorts',authMiddleware,editShorts)
+
+router.get("/getUserAllShorts/:userId", authMiddleware, getUserAllShorts);
 
 module.exports = router;

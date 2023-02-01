@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeShortsReplayComment = exports.shortsReplayComment = exports.likeShortsMainComment = exports.postShortsComment = exports.getShortComment = exports.deleteShort = exports.likeShortReq = exports.getAllVideo = exports.uploadVideo = void 0;
+exports.getUserAllShorts = exports.editShorts = exports.likeShortsReplayComment = exports.shortsReplayComment = exports.likeShortsMainComment = exports.postShortsComment = exports.getShortComment = exports.deleteShort = exports.likeShortReq = exports.getAllVideo = exports.uploadVideo = void 0;
 const videoSchema_1 = __importDefault(require("../models/videoSchema"));
 const videoCommentSchema_1 = __importDefault(require("../models/videoCommentSchema"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -169,7 +169,6 @@ const shortsReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, func
         const addNewComment = yield videoCommentSchema_1.default
             .findById(comment)
             .populate("replayComment.userId");
-        console.log(addNewComment);
         res.json({
             message: "liked comment",
             comments: addNewComment === null || addNewComment === void 0 ? void 0 : addNewComment.replayComment,
@@ -205,3 +204,38 @@ const likeShortsReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.likeShortsReplayComment = likeShortsReplayComment;
+const editShorts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield videoSchema_1.default.updateOne({ _id: req.body.postId }, {
+            $set: {
+                description: req.body.newDescription,
+            },
+        });
+        res.status(200).json({
+            success: true,
+            newDescription: req.body.newDescription,
+            message: "Edited post",
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.editShorts = editShorts;
+const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.userId;
+        const AllPosts = yield videoSchema_1.default
+            .find({ userId: userId })
+            .populate("userId");
+        res.json({
+            message: "AllPosts fetched successfully",
+            AllPosts: AllPosts,
+            success: true,
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getUserAllShorts = getUserAllShorts;

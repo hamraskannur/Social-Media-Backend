@@ -193,3 +193,41 @@ export const likeShortsReplayComment = async (req: Request, res: Response) => {
   }
 };
 
+
+export const editShorts = async (req: Request, res: Response) => {
+  try {
+    await videoSchema.updateOne(
+      { _id: req.body.postId },
+      {
+        $set: {
+          description: req.body.newDescription,
+        },
+      }
+    );
+    res.status(200).json({
+      success: true,
+      newDescription: req.body.newDescription,
+      message: "Edited post",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const getUserAllShorts = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const AllPosts = await videoSchema
+      .find({ userId: userId })
+      .populate("userId");
+
+    res.json({
+      message: "AllPosts fetched successfully",
+      AllPosts: AllPosts,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
