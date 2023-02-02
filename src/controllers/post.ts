@@ -441,3 +441,19 @@ export const reportPost = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserAllShorts = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const AllPosts = await postCollection
+      .find({ userId: userId ,shorts:{$exists:true}})
+      .populate("userId");
+
+    res.json({
+      message: "AllPosts fetched successfully",
+      AllPosts: AllPosts,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

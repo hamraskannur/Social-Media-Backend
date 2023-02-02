@@ -2,7 +2,7 @@
 import { Router } from 'express'
 import { adminLogin,getAllUser,changeStatus,getAllReportPost,blockPost } from '../controllers/admin'
 import { getFriendsAccount } from "../controllers/user";
-import { getUserAllPost, getComment, getReplayComment, getOnePost } from "../controllers/post";
+import { getUserAllPost, getComment, getReplayComment, getOnePost,getUserAllShorts } from "../controllers/post";
 
 const router = Router() 
 const authMiddleware = require('../middleware/authMiddleware')
@@ -26,5 +26,7 @@ router.get("/getComment/:postId", authMiddleware, getComment);
 router.get('/getReplayComment/:commentId',authMiddleware,getReplayComment)
 
 router.get('/getOnePost/:postId',authMiddleware, getOnePost);
+
+router.get('/getUserAllShorts/:userId',authMiddleware,getUserAllShorts)
 
 module.exports = router

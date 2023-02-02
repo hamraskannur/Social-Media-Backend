@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reportPost = exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getUserAllPost = exports.getComment = exports.postComment = exports.likePostReq = exports.getOnePost = exports.getAllPosts = exports.addPost = void 0;
+exports.getUserAllShorts = exports.reportPost = exports.editPost = exports.deletePost = exports.getSavedPost = exports.savePost = exports.likeReplayComment = exports.getReplayComment = exports.postReplayComment = exports.likeMainComment = exports.getUserAllPost = exports.getComment = exports.postComment = exports.likePostReq = exports.getOnePost = exports.getAllPosts = exports.addPost = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const photoSchema_1 = __importDefault(require("../models/photoSchema"));
 const CommentSchema_1 = __importDefault(require("../models/CommentSchema"));
@@ -460,3 +460,20 @@ const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.reportPost = reportPost;
+const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.userId;
+        const AllPosts = yield photoSchema_1.default
+            .find({ userId: userId, shorts: { $exists: true } })
+            .populate("userId");
+        res.json({
+            message: "AllPosts fetched successfully",
+            AllPosts: AllPosts,
+            success: true,
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getUserAllShorts = getUserAllShorts;
