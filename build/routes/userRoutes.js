@@ -20,4 +20,5 @@ router.put("/acceptRequest", authMiddleware, user_1.acceptRequest);
 router.delete("/deleteRequests/:deleteId", authMiddleware, user_1.deleteRequests);
 router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser);
 router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
+router.put('/changeToPrivate', authMiddleware, user_1.changeToPrivate);
 module.exports = router;

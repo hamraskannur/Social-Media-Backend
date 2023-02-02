@@ -418,7 +418,6 @@ export const reportPost = async (req: Request, res: Response) => {
     report.save();
     res.status(200).json({
       success: true,
-      newDescription: req.body.newDescription,
       message: "report post",
     });
   } else {

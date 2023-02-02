@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.changeToPrivate = exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -516,3 +516,34 @@ const getFollowersUser = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getFollowersUser = getFollowersUser;
+const changeToPrivate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    const userId = req.body.userId;
+    userSchema_1.default.updateOne({ _id: userId }, {
+        $set: {
+            public: req.body.checked
+        },
+    }).then((data) => {
+        if (data) {
+            if (data.modifiedCount > 0) {
+                return res.json({
+                    message: "user data updated successfully",
+                    success: true,
+                });
+            }
+            else {
+                return res.json({
+                    message: "",
+                    success: "noUpdates",
+                });
+            }
+        }
+        else {
+            return res.json({
+                message: "something is wrong",
+                success: false,
+            });
+        }
+    });
+});
+exports.changeToPrivate = changeToPrivate;

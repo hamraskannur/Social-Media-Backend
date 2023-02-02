@@ -504,3 +504,38 @@ export const getFollowersUser = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+
+export const changeToPrivate = async (req: Request, res: Response) => {
+ console.log(
+  req.body
+ );
+ const userId = req.body.userId;
+   UserCollection.updateOne(
+     { _id: userId },
+     {
+       $set: {
+        public:req.body.checked
+       },
+     }
+   ).then((data) => {
+     if (data) {
+       if (data.modifiedCount > 0) {
+         return res.json({
+           message: "user data updated successfully",
+           success: true,
+         });
+       } else {
+         return res.json({
+           message: "",
+           success: "noUpdates",
+         });
+       }
+     } else {
+       return res.json({
+         message: "something is wrong",
+         success: false,
+       });
+     }
+   });
+
+}
