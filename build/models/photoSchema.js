@@ -37,6 +37,10 @@ const postSchema = new mongoose_1.Schema({
         type: Boolean,
         default: true
     },
+    edit: {
+        type: Boolean,
+        default: false
+    },
     img: [{
             type: String
         }],

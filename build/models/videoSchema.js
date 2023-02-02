@@ -40,6 +40,10 @@ const videoSchema = new mongoose_1.Schema({
     img: {
         type: String
     },
+    edit: {
+        type: Boolean,
+        default: false
+    },
     likes: [{
             type: String
         }]

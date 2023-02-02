@@ -409,6 +409,7 @@ const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const postData = req.body;
         yield photoSchema_1.default.updateOne({ _id: req.body.postId }, {
             $set: {
+                edit: true,
                 description: req.body.newDescription,
             },
         });

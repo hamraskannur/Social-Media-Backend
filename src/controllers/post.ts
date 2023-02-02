@@ -391,6 +391,7 @@ export const editPost = async (req: Request, res: Response) => {
       { _id: req.body.postId },
       {
         $set: {
+          edit:true,
           description: req.body.newDescription,
         },
       }

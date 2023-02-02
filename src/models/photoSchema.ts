@@ -21,6 +21,10 @@ const postSchema:Schema=new Schema({
         type:Boolean,
         default:true
     },
+    edit:{
+        type:Boolean,
+        default:false
+    },
     img: [{
         type: String
     }],

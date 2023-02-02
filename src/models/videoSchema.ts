@@ -24,6 +24,10 @@ const videoSchema:Schema=new Schema({
     img: {
         type: String
     },
+    edit:{
+        type:Boolean,
+        default:false
+    },
     likes:[{
         type: String
     }]
