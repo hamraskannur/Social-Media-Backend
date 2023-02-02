@@ -36,7 +36,7 @@ const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addPost = addPost;
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const AllPosts = yield photoSchema_1.default.find().populate("userId");
+        const AllPosts = yield photoSchema_1.default.find({ img: { $exists: true } }).populate("userId");
         res.status(201).json({ AllPosts });
     }
     catch (error) {
@@ -45,8 +45,9 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getAllPosts = getAllPosts;
 const getOnePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, PostId } = req.params;
-    const Post = yield photoSchema_1.default.find({ _id: PostId }).populate("userId");
+    const { postId } = req.params;
+    console.log(postId);
+    const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId");
     res.status(201).json({ Post });
 });
 exports.getOnePost = getOnePost;
@@ -169,7 +170,7 @@ const getUserAllPost = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
-            .find({ userId: userId })
+            .find({ userId: userId, img: { $exists: true } })
             .populate("userId");
         res.json({
             message: "AllPosts fetched successfully",

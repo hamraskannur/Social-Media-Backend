@@ -16,4 +16,5 @@ router.get("/getFriendsAccount/:userId", authMiddleware, user_1.getFriendsAccoun
 router.get("/getUserAllPost/:userId", authMiddleware, post_1.getUserAllPost);
 router.get("/getComment/:postId", authMiddleware, post_1.getComment);
 router.get('/getReplayComment/:commentId', authMiddleware, post_1.getReplayComment);
+router.get('/getOnePost/:postId', authMiddleware, post_1.getOnePost);
 module.exports = router;

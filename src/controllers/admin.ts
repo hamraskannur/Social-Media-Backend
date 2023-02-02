@@ -76,9 +76,9 @@ export const getAllReportPost = async (req: Request, res: Response) => {
   try {
     const allPost = await ReportSchema.find()
       .populate("PostId")
-      .populate("userText.userId")    
-      
-    res.status(200).send({ Status: true, Posts: allPost });
+      .populate("userText.userId")
+
+      res.status(200).send({ Status: true, Posts: allPost });
   } catch (error) {
     console.log(error);
   }

@@ -23,7 +23,7 @@ export const addPost = async (req: Request, res: Response) => {
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const AllPosts = await postCollection.find().populate("userId");
+    const AllPosts = await postCollection.find({img:{$exists:true}}).populate("userId");
     res.status(201).json({ AllPosts });
   } catch (error) {
     console.log(error);
@@ -31,9 +31,10 @@ export const getAllPosts = async (req: Request, res: Response) => {
 };
 
 export const getOnePost = async (req: Request, res: Response) => {
-  const { userId, PostId } = req.params;
-
-  const Post = await postCollection.find({ _id: PostId }).populate("userId");
+  const { postId } = req.params;
+     console.log(postId);
+     
+  const Post = await postCollection.findOne({ _id: postId }).populate("userId");
   res.status(201).json({ Post });
 };
 
@@ -156,7 +157,7 @@ export const getUserAllPost = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId })
+      .find({ userId: userId ,img:{$exists:true}})
       .populate("userId");
 
     res.json({
@@ -439,3 +440,4 @@ export const reportPost = async (req: Request, res: Response) => {
     });
   }
 };
+
