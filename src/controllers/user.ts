@@ -20,14 +20,14 @@ export const postSignup = async (
   };
   try {
     const { name, email, dob, phoneNo, password, username } = req.body;
-    const user = await UserCollection.find({ email });
+    const user = await UserCollection.findOne({ email });
 
-    if (user.length > 0) {
-      if (user[0].verified === false) {
-        nodemailer(user[0].id, email);
+    if (user) {
+      if (user.verified === false) {
+        nodemailer(user.id, email);
         userSignup.message = "An Email resent to your account please verify";
         userSignup.Status = true;
-        res.status(201).json({ userSignup });
+        return res.status(201).json({ userSignup });
       }
 
       userSignup.message = "Email Exist";
@@ -37,7 +37,7 @@ export const postSignup = async (
 
       if (userName.length > 0) {
         userSignup.message = "userName Exist";
-        res.json({ userSignup });
+        return res.json({ userSignup });
       }
 
       const user = await new UserCollection({
@@ -52,7 +52,7 @@ export const postSignup = async (
       await nodemailer(user.id, user.email);
       userSignup.message = "An Email sent to your account please verify";
       userSignup.Status = true;
-      res.status(201).json({ userSignup });
+       res.status(201).json({ userSignup });
     }
   } catch (error) {
     userSignup.message = "some thing is wong";

@@ -23,7 +23,7 @@ const nodemailer = (id, email) => __awaiter(void 0, void 0, void 0, function* ()
         userId: id,
         token: crypto.randomBytes(32).toString('hex')
     }).save();
-    const url = `${process.env.BASE_URL}user/verify/${id}/${userToken.token}`;
+    const url = `${process.env.BASE_URL}verify?id=${id}&token=${userToken.token}`;
     (0, sentEmail_1.sendEmail)(email, 'verify Email', url);
 });
 exports.nodemailer = nodemailer;

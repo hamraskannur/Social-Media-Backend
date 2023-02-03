@@ -30,8 +30,9 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             to: email,
             subject: subject,
             text: text
+        }).then(() => {
+            console.log('email sent successfully');
         });
-        console.log('email sent successfully');
     }
     catch (error) {
         console.log('email not sent');

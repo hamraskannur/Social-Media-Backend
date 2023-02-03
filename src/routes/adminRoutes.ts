@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
 import { adminLogin,getAllUser,changeStatus,getAllReportPost,blockPost } from '../controllers/admin'
-import { getFriendsAccount } from "../controllers/user";
+import { getFriendsAccount, getFollowingUser, getFollowersUser } from "../controllers/user";
 import { getUserAllPost, getComment, getReplayComment, getOnePost,getUserAllShorts } from "../controllers/post";
 
 const router = Router() 
@@ -28,5 +28,9 @@ router.get('/getReplayComment/:commentId',authMiddleware,getReplayComment)
 router.get('/getOnePost/:postId',authMiddleware, getOnePost);
 
 router.get('/getUserAllShorts/:userId',authMiddleware,getUserAllShorts)
+
+router.get('/getFollowingUser/:userId' , authMiddleware,getFollowingUser)
+
+router.get('/getFollowersUser/:userId' , authMiddleware,getFollowersUser)
 
 module.exports = router

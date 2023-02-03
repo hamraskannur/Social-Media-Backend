@@ -18,4 +18,6 @@ router.get("/getComment/:postId", authMiddleware, post_1.getComment);
 router.get('/getReplayComment/:commentId', authMiddleware, post_1.getReplayComment);
 router.get('/getOnePost/:postId', authMiddleware, post_1.getOnePost);
 router.get('/getUserAllShorts/:userId', authMiddleware, post_1.getUserAllShorts);
+router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser);
+router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
 module.exports = router;
