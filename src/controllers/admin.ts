@@ -108,8 +108,11 @@ export const getAllNotifications = async (req: Request, res: Response) => {
   try{
      
     const admin=await adminSchema.find({username:"admin"}).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 })
+
     if(admin){
-     
+     await adminSchema.updateOne({ username:"admin"},{$set:{
+        read:false,
+      }})
       res.status(200).send({ Status: true,admin:admin[0]?.notification });
     }else{
       res.status(200).send({ Status: false });
@@ -125,7 +128,7 @@ export const getAllNotifications = async (req: Request, res: Response) => {
 
 export const checkNewNotification = async (req: Request, res: Response) => {
   try{
-    const admin =await adminSchema.findOne({read:true})    
+    const admin =await adminSchema.findOne({read:false})    
     if(admin){
      return res.status(200).send({ status: true})
     }else{

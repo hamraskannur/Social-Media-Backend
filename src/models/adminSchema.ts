@@ -7,7 +7,6 @@ interface token extends Document {
   password: string
   notification:[{
     userId:mongoose.Types.ObjectId,
-    postId:mongoose.Types.ObjectId,
     text:string
   }]
 }
@@ -25,10 +24,6 @@ const adminSchema: Schema = new Schema({
     type:Boolean
   },
   notification:[{
-    postId:{
-      type:Schema.Types.ObjectId,
-      ref:"post"
-    },
     userId:{
       type:Schema.Types.ObjectId,
       ref:"user"

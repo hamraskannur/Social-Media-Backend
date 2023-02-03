@@ -117,6 +117,9 @@ const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const admin = yield adminSchema_1.default.find({ username: "admin" }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         if (admin) {
+            yield adminSchema_1.default.updateOne({ username: "admin" }, { $set: {
+                    read: false,
+                } });
             res.status(200).send({ Status: true, admin: (_c = admin[0]) === null || _c === void 0 ? void 0 : _c.notification });
         }
         else {
@@ -130,8 +133,7 @@ const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, func
 exports.getAllNotifications = getAllNotifications;
 const checkNewNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const admin = yield adminSchema_1.default.findOne({ read: true });
-        console.log(admin);
+        const admin = yield adminSchema_1.default.findOne({ read: false });
         if (admin) {
             return res.status(200).send({ status: true });
         }

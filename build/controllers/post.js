@@ -433,48 +433,34 @@ const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const report = yield ReportSchema_1.default.findOne({
         PostId: new mongoose_1.default.Types.ObjectId(req.body.postId),
     });
-    const admin = yield adminSchema_1.default.findOne({ username: "admin" });
-    console.log(admin, 44454545454545454545454545454);
-    if (admin) {
-        if (report) {
-            (_c = report === null || report === void 0 ? void 0 : report.userText) === null || _c === void 0 ? void 0 : _c.push({
-                userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
-                text: req.body.newDescription,
-            });
-            report.save();
-            res.status(200).json({
-                success: true,
-                message: "report post",
-            });
-            admin.notification.push({
-                postId: req.body.postId,
-                userId: req.body.userId,
-                text: "reported post",
-            });
-            admin.save();
-        }
-        else {
-            yield new ReportSchema_1.default({
-                PostId: req.body.postId,
-                userText: [
-                    {
-                        userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
-                        text: req.body.newDescription,
-                    },
-                ],
-            }).save();
-            admin.notification.push({
-                postId: req.body.postId,
-                userId: req.body.userId,
-                text: "reported post",
-            });
-            admin.save();
-            res.status(200).json({
-                success: true,
-                newDescription: req.body.newDescription,
-                message: "report post",
-            });
-        }
+    if (report) {
+        (_c = report === null || report === void 0 ? void 0 : report.userText) === null || _c === void 0 ? void 0 : _c.push({
+            userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
+            text: req.body.newDescription,
+        });
+        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, { $push: { notification: { userId: req.body.userId, text: "reported post" } }, $set: { read: true } });
+        report.save();
+        res.status(200).json({
+            success: true,
+            message: "report post",
+        });
+    }
+    else {
+        yield new ReportSchema_1.default({
+            PostId: req.body.postId,
+            userText: [
+                {
+                    userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
+                    text: req.body.newDescription,
+                },
+            ],
+        }).save();
+        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, { $push: { notification: { userId: req.body.userId, text: "reported post" } }, $set: { read: true } });
+        res.status(200).json({
+            success: true,
+            newDescription: req.body.newDescription,
+            message: "report post",
+        });
     }
 });
 exports.reportPost = reportPost;

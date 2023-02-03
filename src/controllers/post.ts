@@ -415,50 +415,43 @@ export const reportPost = async (req: Request, res: Response) => {
     PostId: new mongoose.Types.ObjectId(req.body.postId),
   });
 
-  const admin = await adminSchema.findOne({ username: "admin" });
-  console.log(admin,44454545454545454545454545454);
-  if (admin) {
-    if (report) {
-      report?.userText?.push({
-        userId: new mongoose.Types.ObjectId(req.body.userId),
-        text: req.body.newDescription,
-      });
 
-      report.save();
-      res.status(200).json({
-        success: true,
-        message: "report post",
-      });
-       admin.notification.push({
-        postId: req.body.postId,
-        userId: req.body.userId,
-        text: "reported post",
-      });
-      admin.save();
-    } else {
-      await new ReportSchema({
-        PostId: req.body.postId,
-        userText: [
-          {
-            userId: new mongoose.Types.ObjectId(req.body.userId),
-            text: req.body.newDescription,
-          },
-        ],
-      }).save();
+  if (report) {
+    report?.userText?.push({
+      userId: new mongoose.Types.ObjectId(req.body.userId),
+      text: req.body.newDescription,
+    });
+    await adminSchema.findOneAndUpdate(
+      { username: "admin" },
+      { $push: {notification:{ userId: req.body.userId, text: "reported post"} },$set:{read:true} }
+    );
+   
+    report.save();
+    res.status(200).json({
+      success: true,
+      message: "report post",
+    });
+  } else {
+    await new ReportSchema({
+      PostId: req.body.postId,
+      userText: [
+        {
+          userId: new mongoose.Types.ObjectId(req.body.userId),
+          text: req.body.newDescription,
+        },
+      ],
+    }).save();
 
-       admin.notification.push({
-        postId: req.body.postId,
-        userId: req.body.userId,
-        text: "reported post",
-      });
-      admin.save();
+    await adminSchema.findOneAndUpdate(
+      { username: "admin" },
+      { $push: { notification:{ userId: req.body.userId, text: "reported post"}}, $set:{read:true} }
+    );
 
-      res.status(200).json({
-        success: true,
-        newDescription: req.body.newDescription,
-        message: "report post",
-      });
-    }
+    res.status(200).json({
+      success: true,
+      newDescription: req.body.newDescription,
+      message: "report post",
+    });
   }
 };
 
@@ -478,4 +471,3 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
-

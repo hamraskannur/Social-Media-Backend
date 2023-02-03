@@ -15,10 +15,6 @@ const adminSchema = new mongoose_1.Schema({
         type: Boolean
     },
     notification: [{
-            postId: {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "post"
-            },
             userId: {
                 type: mongoose_1.Schema.Types.ObjectId,
                 ref: "user"
