@@ -91,7 +91,23 @@ const userSchema: Schema = new Schema({
   }],
   description:{
     type:String
-  }
+  },
+  notification:[{
+    read:{
+      type:String
+    },
+    postId:{
+      type:Schema.Types.ObjectId,
+      ref:"post"
+    },
+    userId:{
+      type:Schema.Types.ObjectId,
+      ref:"user"
+    },
+    text:{
+      type:String
+    }
+  }]
 
 
 })

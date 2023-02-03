@@ -69,6 +69,22 @@ const userSchema = new mongoose_1.Schema({
         }],
     description: {
         type: String
-    }
+    },
+    notification: [{
+            read: {
+                type: String
+            },
+            postId: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: "post"
+            },
+            userId: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: "user"
+            },
+            text: {
+                type: String
+            }
+        }]
 });
 exports.default = (0, mongoose_1.model)('user', userSchema);

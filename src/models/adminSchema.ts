@@ -1,9 +1,15 @@
-import { model, Schema, Document } from 'mongoose'
+import mongoose,{ model, Schema, Document } from 'mongoose'
 
 interface token extends Document {
   name: string
   email: string
+  read:Boolean
   password: string
+  notification:[{
+    userId:mongoose.Types.ObjectId,
+    postId:mongoose.Types.ObjectId,
+    text:string
+  }]
 }
 const adminSchema: Schema = new Schema({
   name: {
@@ -14,7 +20,24 @@ const adminSchema: Schema = new Schema({
   },
   password: {
     type: String
-  }
+  },
+  read:{
+    type:Boolean
+  },
+  notification:[{
+    postId:{
+      type:Schema.Types.ObjectId,
+      ref:"post"
+    },
+    userId:{
+      type:Schema.Types.ObjectId,
+      ref:"user"
+    },
+    text:{
+      type:String
+    }
+  }]
+
 })
 
 export default model<token>('admin', adminSchema)

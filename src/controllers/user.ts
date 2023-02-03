@@ -542,7 +542,6 @@ export const changeToPrivate = async (req: Request, res: Response) => {
 export const searchUser= async (req: Request, res: Response) => {
   try {
     const { searchData: searchExpression } = req.body
-     console.log("this is a search expression");
      
     const searchData = await UserCollection.find({ username: { $regex: searchExpression, $options: 'i' } })
     if (searchData) {
@@ -554,3 +553,4 @@ export const searchUser= async (req: Request, res: Response) => {
     res.status(500).json(error)
   }
 }
+

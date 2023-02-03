@@ -550,7 +550,6 @@ exports.changeToPrivate = changeToPrivate;
 const searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { searchData: searchExpression } = req.body;
-        console.log("this is a search expression");
         const searchData = yield userSchema_1.default.find({ username: { $regex: searchExpression, $options: 'i' } });
         if (searchData) {
             res.status(200).json(searchData);

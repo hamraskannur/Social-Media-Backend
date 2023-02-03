@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
+exports.checkNewNotification = exports.getAllNotifications = exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
@@ -112,3 +112,34 @@ const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.blockPost = blockPost;
+const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
+    try {
+        const admin = yield adminSchema_1.default.find({ username: "admin" }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 });
+        if (admin) {
+            res.status(200).send({ Status: true, admin: (_c = admin[0]) === null || _c === void 0 ? void 0 : _c.notification });
+        }
+        else {
+            res.status(200).send({ Status: false });
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.getAllNotifications = getAllNotifications;
+const checkNewNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const admin = yield adminSchema_1.default.findOne({ read: true });
+        console.log(admin);
+        if (admin) {
+            return res.status(200).send({ status: true });
+        }
+        else {
+            return res.status(200).send({ status: false });
+        }
+    }
+    catch (error) {
+    }
+});
+exports.checkNewNotification = checkNewNotification;

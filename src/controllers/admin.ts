@@ -93,7 +93,7 @@ export const blockPost = async (req: Request, res: Response) => {
        _id:new mongoose.Types.ObjectId(postId)
       },
       {
-        $set: {
+        $set: { 
           status: status,
         },
       }
@@ -103,3 +103,36 @@ export const blockPost = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+
+export const getAllNotifications = async (req: Request, res: Response) => {
+  try{
+     
+    const admin=await adminSchema.find({username:"admin"}).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 })
+    if(admin){
+     
+      res.status(200).send({ Status: true,admin:admin[0]?.notification });
+    }else{
+      res.status(200).send({ Status: false });
+
+    }
+
+
+  }catch(error){
+    console.log(error);
+
+  }
+}
+
+export const checkNewNotification = async (req: Request, res: Response) => {
+  try{
+    const admin =await adminSchema.findOne({read:true})    
+    if(admin){
+     return res.status(200).send({ status: true})
+    }else{
+      return  res.status(200).send({ status: false})
+    }
+    
+  }catch(error) {
+
+  }
+}

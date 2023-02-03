@@ -5,6 +5,7 @@ import commentCollection from "../models/CommentSchema";
 import ReplayComment from "../models/ReplayComment";
 import UserCollection from "../models/userSchema";
 import ReportSchema from "../models/ReportSchema";
+import adminSchema from "../models/adminSchema";
 
 export const addPost = async (req: Request, res: Response) => {
   try {
@@ -23,7 +24,9 @@ export const addPost = async (req: Request, res: Response) => {
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const AllPosts = await postCollection.find({img:{$exists:true}}).populate("userId");
+    const AllPosts = await postCollection
+      .find({ img: { $exists: true } })
+      .populate("userId");
     res.status(201).json({ AllPosts });
   } catch (error) {
     console.log(error);
@@ -32,8 +35,8 @@ export const getAllPosts = async (req: Request, res: Response) => {
 
 export const getOnePost = async (req: Request, res: Response) => {
   const { postId } = req.params;
-     console.log(postId);
-     
+  console.log(postId);
+
   const Post = await postCollection.findOne({ _id: postId }).populate("userId");
   res.status(201).json({ Post });
 };
@@ -157,7 +160,7 @@ export const getUserAllPost = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId ,img:{$exists:true}})
+      .find({ userId: userId, img: { $exists: true } })
       .populate("userId");
 
     res.json({
@@ -392,7 +395,7 @@ export const editPost = async (req: Request, res: Response) => {
       { _id: req.body.postId },
       {
         $set: {
-          edit:true,
+          edit: true,
           description: req.body.newDescription,
         },
       }
@@ -408,36 +411,54 @@ export const editPost = async (req: Request, res: Response) => {
 };
 
 export const reportPost = async (req: Request, res: Response) => {
-  console.log(req.body.newDescription);
   const report = await ReportSchema.findOne({
     PostId: new mongoose.Types.ObjectId(req.body.postId),
   });
-  if (report) {
-    report?.userText?.push({
-      userId: new mongoose.Types.ObjectId(req.body.userId),
-      text: req.body.newDescription,
-    });
-    report.save();
-    res.status(200).json({
-      success: true,
-      message: "report post",
-    });
-  } else {
-    await new ReportSchema({
-      PostId: req.body.postId,
-      userText: [
-        {
-          userId: new mongoose.Types.ObjectId(req.body.userId),
-          text: req.body.newDescription,
-        },
-      ],
-    }).save();
 
-    res.status(200).json({
-      success: true,
-      newDescription: req.body.newDescription,
-      message: "report post",
-    });
+  const admin = await adminSchema.findOne({ username: "admin" });
+  console.log(admin,44454545454545454545454545454);
+  if (admin) {
+    if (report) {
+      report?.userText?.push({
+        userId: new mongoose.Types.ObjectId(req.body.userId),
+        text: req.body.newDescription,
+      });
+
+      report.save();
+      res.status(200).json({
+        success: true,
+        message: "report post",
+      });
+       admin.notification.push({
+        postId: req.body.postId,
+        userId: req.body.userId,
+        text: "reported post",
+      });
+      admin.save();
+    } else {
+      await new ReportSchema({
+        PostId: req.body.postId,
+        userText: [
+          {
+            userId: new mongoose.Types.ObjectId(req.body.userId),
+            text: req.body.newDescription,
+          },
+        ],
+      }).save();
+
+       admin.notification.push({
+        postId: req.body.postId,
+        userId: req.body.userId,
+        text: "reported post",
+      });
+      admin.save();
+
+      res.status(200).json({
+        success: true,
+        newDescription: req.body.newDescription,
+        message: "report post",
+      });
+    }
   }
 };
 
@@ -445,7 +466,7 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId ,shorts:{$exists:true}})
+      .find({ userId: userId, shorts: { $exists: true } })
       .populate("userId");
 
     res.json({
@@ -457,3 +478,4 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+

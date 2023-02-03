@@ -20,4 +20,6 @@ router.get('/getOnePost/:postId', authMiddleware, post_1.getOnePost);
 router.get('/getUserAllShorts/:userId', authMiddleware, post_1.getUserAllShorts);
 router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser);
 router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
+router.get('/getAllNotifications', authMiddleware, admin_1.getAllNotifications);
+router.get('/checkNewNotification', authMiddleware, admin_1.checkNewNotification);
 module.exports = router;
