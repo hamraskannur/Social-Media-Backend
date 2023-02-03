@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeToPrivate = exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.searchUser = exports.changeToPrivate = exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -547,3 +547,20 @@ const changeToPrivate = (req, res) => __awaiter(void 0, void 0, void 0, function
     });
 });
 exports.changeToPrivate = changeToPrivate;
+const searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { searchData: searchExpression } = req.body;
+        console.log("this is a search expression");
+        const searchData = yield userSchema_1.default.find({ username: { $regex: searchExpression, $options: 'i' } });
+        if (searchData) {
+            res.status(200).json(searchData);
+        }
+        else {
+            res.status(404).json({ noUsers: true });
+        }
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+});
+exports.searchUser = searchUser;
