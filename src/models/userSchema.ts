@@ -1,4 +1,4 @@
-import { model, Schema, Document } from 'mongoose'
+import mongoose,{ model, Schema, Document } from 'mongoose'
 
 interface IUser extends Document {
   username: string
@@ -15,12 +15,19 @@ interface IUser extends Document {
   description:string
   ProfileImg:string
   coverImg:string
-  public:string
+  public:Boolean
   PostalCode:number
   Requests: string[];
   Followers: string[];
   Following: string[];
   saved:string[];
+  read:Boolean
+  notification:[{
+    userId:mongoose.Types.ObjectId
+    postId:mongoose.Types.ObjectId
+    text:string
+  }]
+
 }
 const userSchema: Schema = new Schema({
   username: {
@@ -68,7 +75,8 @@ const userSchema: Schema = new Schema({
     type:String
   },
   public:{
-    type:Boolean
+    type:Boolean,
+    default:true
 
   },PostalCode:{
     type:Number
@@ -92,16 +100,16 @@ const userSchema: Schema = new Schema({
   description:{
     type:String
   },
+  read:{
+    type:Boolean
+  },
   notification:[{
-    read:{
-      type:String
-    },
     postId:{
-      type:Schema.Types.ObjectId,
+      type:mongoose.Types.ObjectId,
       ref:"post"
     },
     userId:{
-      type:Schema.Types.ObjectId,
+      type:mongoose.Types.ObjectId,
       ref:"user"
     },
     text:{

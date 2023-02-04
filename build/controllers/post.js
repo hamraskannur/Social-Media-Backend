@@ -39,7 +39,7 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const AllPosts = yield photoSchema_1.default
             .find({ img: { $exists: true } })
-            .populate("userId");
+            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1, public: 1, Followers: 1 });
         res.status(201).json({ AllPosts });
     }
     catch (error) {
@@ -49,7 +49,6 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllPosts = getAllPosts;
 const getOnePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { postId } = req.params;
-    console.log(postId);
     const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId");
     res.status(201).json({ Post });
 });
@@ -64,6 +63,18 @@ const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         if (!post.likes.includes(userId)) {
             yield post.updateOne({ $push: { likes: userId } });
+            console.log(post.userId);
+            yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
+                $push: {
+                    notification: {
+                        postId: post._id,
+                        userId: userId,
+                        text: "liked post",
+                        read: false
+                    }
+                },
+                $set: { read: true },
+            });
             return res.json({ Message: "post liked successfully", success: true });
         }
         else {
@@ -91,6 +102,17 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             comment,
         });
         yield postComment.save();
+        yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
+            $push: {
+                notification: {
+                    postId: postId,
+                    userId: userId,
+                    text: " commented you post",
+                    read: false
+                }
+            },
+            $set: { read: true },
+        });
         yield CommentSchema_1.default.populate(postComment, {
             path: "userId",
             select: { username: 1 },
@@ -199,6 +221,17 @@ const likeMainComment = (req, res) => __awaiter(void 0, void 0, void 0, function
                 res.json({ message: "unLiked comment", success: true });
             }
             else {
+                yield userSchema_1.default.findOneAndUpdate({ _id: comment.userId }, {
+                    $push: {
+                        notification: {
+                            postId: comment.postId,
+                            userId: userId,
+                            text: "liked your comment",
+                            read: false
+                        }
+                    },
+                    $set: { read: true },
+                });
                 yield comment.updateOne({ $push: { likes: userId } });
                 res.json({ message: "liked comment", success: true });
             }
@@ -438,7 +471,12 @@ const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             userId: new mongoose_1.default.Types.ObjectId(req.body.userId),
             text: req.body.newDescription,
         });
-        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, { $push: { notification: { userId: req.body.userId, text: "reported post" } }, $set: { read: true } });
+        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, {
+            $push: {
+                notification: { userId: req.body.userId, text: "reported post" },
+            },
+            $set: { read: true },
+        });
         report.save();
         res.status(200).json({
             success: true,
@@ -455,7 +493,12 @@ const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 },
             ],
         }).save();
-        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, { $push: { notification: { userId: req.body.userId, text: "reported post" } }, $set: { read: true } });
+        yield adminSchema_1.default.findOneAndUpdate({ username: "admin" }, {
+            $push: {
+                notification: { userId: req.body.userId, text: "reported post" },
+            },
+            $set: { read: true },
+        });
         res.status(200).json({
             success: true,
             newDescription: req.body.newDescription,

@@ -26,7 +26,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const AllPosts = await postCollection
       .find({ img: { $exists: true } })
-      .populate("userId");
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
     res.status(201).json({ AllPosts });
   } catch (error) {
     console.log(error);
@@ -35,7 +35,6 @@ export const getAllPosts = async (req: Request, res: Response) => {
 
 export const getOnePost = async (req: Request, res: Response) => {
   const { postId } = req.params;
-  console.log(postId);
 
   const Post = await postCollection.findOne({ _id: postId }).populate("userId");
   res.status(201).json({ Post });
@@ -52,6 +51,21 @@ export const likePostReq = async (req: Request, res: Response) => {
     }
     if (!post.likes.includes(userId)) {
       await post.updateOne({ $push: { likes: userId } });
+      console.log(post.userId);
+      
+       await UserCollection.findOneAndUpdate(
+        { _id: post.userId},
+        {
+          $push: {
+            notification: { 
+              postId:post._id,
+              userId: userId,
+              text: "liked post",
+              read: false }
+          },
+          $set: { read: true },
+        }
+      );
       return res.json({ Message: "post liked successfully", success: true });
     } else {
       await post.updateOne({ $pull: { likes: userId } });
@@ -77,6 +91,19 @@ export const postComment = async (req: Request, res: Response) => {
       comment,
     });
     await postComment.save();
+    await UserCollection.findOneAndUpdate(
+      { _id: post.userId},
+      {
+        $push: {
+          notification: { 
+            postId:postId,
+            userId: userId,
+            text: " commented you post",
+            read: false }
+        },
+        $set: { read: true },
+      }
+    );
 
     await commentCollection.populate(postComment, {
       path: "userId",
@@ -186,6 +213,21 @@ export const likeMainComment = async (req: Request, res: Response) => {
         await comment.updateOne({ $pull: { likes: userId } });
         res.json({ message: "unLiked comment", success: true });
       } else {
+      
+
+        await UserCollection.findOneAndUpdate(
+          { _id:comment.userId},
+          {
+            $push: {
+              notification: { 
+                postId:comment.postId,
+                userId: userId,
+                text: "liked your comment",
+                read: false }
+            },
+            $set: { read: true },
+          }
+        );
         await comment.updateOne({ $push: { likes: userId } });
         res.json({ message: "liked comment", success: true });
       }
@@ -204,6 +246,7 @@ export const postReplayComment = async (req: Request, res: Response) => {
       comment: newComment,
     });
     postComment.save();
+
     res.json({
       message: "liked comment",
       comments: postComment,
@@ -415,7 +458,6 @@ export const reportPost = async (req: Request, res: Response) => {
     PostId: new mongoose.Types.ObjectId(req.body.postId),
   });
 
-
   if (report) {
     report?.userText?.push({
       userId: new mongoose.Types.ObjectId(req.body.userId),
@@ -423,9 +465,14 @@ export const reportPost = async (req: Request, res: Response) => {
     });
     await adminSchema.findOneAndUpdate(
       { username: "admin" },
-      { $push: {notification:{ userId: req.body.userId, text: "reported post"} },$set:{read:true} }
+      {
+        $push: {
+          notification: { userId: req.body.userId, text: "reported post" },
+        },
+        $set: { read: true },
+      }
     );
-   
+
     report.save();
     res.status(200).json({
       success: true,
@@ -444,7 +491,12 @@ export const reportPost = async (req: Request, res: Response) => {
 
     await adminSchema.findOneAndUpdate(
       { username: "admin" },
-      { $push: { notification:{ userId: req.body.userId, text: "reported post"}}, $set:{read:true} }
+      {
+        $push: {
+          notification: { userId: req.body.userId, text: "reported post" },
+        },
+        $set: { read: true },
+      }
     );
 
     res.status(200).json({

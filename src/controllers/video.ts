@@ -21,7 +21,7 @@ export const getAllVideo = async (req: Request, res: Response) => {
   try {
     const AllPosts = await postCollection
       .find({shorts:{$exists:true}})
-      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
       console.log(AllPosts);
       
     res.status(201).json({ AllPosts });
@@ -37,7 +37,6 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
     const AllPosts = await postCollection
       .find({ userId: userId ,shorts:{$exists:true }})
       .populate("userId");
-      console.log(AllPosts);
       
     res.json({
       message: "AllPosts fetched successfully",

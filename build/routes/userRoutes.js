@@ -22,4 +22,5 @@ router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser)
 router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
 router.put('/changeToPrivate', authMiddleware, user_1.changeToPrivate);
 router.post('/searchUser', authMiddleware, user_1.searchUser);
+router.get('/getAllNotifications', authMiddleware, user_1.getAllNotifications);
 module.exports = router;

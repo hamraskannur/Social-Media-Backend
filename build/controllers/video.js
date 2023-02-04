@@ -33,7 +33,7 @@ const getAllVideo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const AllPosts = yield photoSchema_1.default
             .find({ shorts: { $exists: true } })
-            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
+            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1, public: 1, Followers: 1 });
         console.log(AllPosts);
         res.status(201).json({ AllPosts });
     }
@@ -48,7 +48,6 @@ const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const AllPosts = yield photoSchema_1.default
             .find({ userId: userId, shorts: { $exists: true } })
             .populate("userId");
-        console.log(AllPosts);
         res.json({
             message: "AllPosts fetched successfully",
             AllPosts: AllPosts,

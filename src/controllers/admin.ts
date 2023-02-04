@@ -118,8 +118,6 @@ export const getAllNotifications = async (req: Request, res: Response) => {
       res.status(200).send({ Status: false });
 
     }
-
-
   }catch(error){
     console.log(error);
 

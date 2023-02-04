@@ -2,7 +2,8 @@
 import { Router } from "express";
 import {
   postSignup,verify,userLogin,googleLogin,getMyPost,getUserData,getFriendsAccount,updateUserData,followUser,
-  getAllRequest,acceptRequest,deleteRequests,getFollowingUser,getFollowersUser, changeToPrivate, searchUser
+  getAllRequest,acceptRequest,deleteRequests,getFollowingUser,getFollowersUser, changeToPrivate, searchUser,
+  getAllNotifications
 } from "../controllers/user";
 
 const router: Router = Router();
@@ -41,5 +42,7 @@ router.get('/getFollowersUser/:userId' , authMiddleware,getFollowersUser)
 router.put('/changeToPrivate' , authMiddleware, changeToPrivate)
 
 router.post('/searchUser',authMiddleware,searchUser)
+
+router.get('/getAllNotifications',authMiddleware,getAllNotifications)
 
 module.exports = router;
