@@ -291,30 +291,27 @@ export const followUser = async (req: Request, res: Response) => {
     if (user?.public) {
       if (!user?.Followers?.includes(userId)) {
         await UserCollection.findOneAndUpdate(
-          { _id: user._id},
+          { _id: user._id },
           {
             $push: {
-              notification: { 
-                postId:userId,
+              notification: {
+                postId: userId,
                 userId: userId,
                 text: "start Followed you",
-                read: false }
-            }
+                read: false,
+              },
+            },
           }
         );
         await user.updateOne({ $push: { Followers: mainUser?._id } });
         await mainUser?.updateOne({ $push: { Following: user._id } });
         res.json({ message: "successfully followed user", success: true });
-
       } else {
-
         await user.updateOne({ $pull: { Followers: mainUser?._id } });
         await mainUser?.updateOne({ $pull: { Following: user._id } });
         res.json({ message: "successfully unFollowed user", success: true });
-
       }
     } else {
-
       if (user?.Followers?.includes(userId)) {
         await user.updateOne({ $pull: { Followers: userId } });
         await mainUser?.updateOne({ $pull: { Following: userId } });
@@ -389,14 +386,15 @@ export const acceptRequest = async (req: Request, res: Response) => {
     if (!user) res.json({ message: "no user", success: false });
     if (user?.Requests?.includes(acceptId)) {
       await UserCollection.findOneAndUpdate(
-        { _id: acceptId},
+        { _id: acceptId },
         {
           $push: {
-            notification: { 
+            notification: {
               userId: userId,
-              text: "start accepted you request",
-              read: false }
-          }
+              text: " accepted you request",
+              read: false,
+            },
+          },
         }
       );
       await user.updateOne({ $pull: { Requests: acceptId } });
@@ -583,23 +581,48 @@ export const searchUser = async (req: Request, res: Response) => {
 };
 
 export const getAllNotifications = async (req: Request, res: Response) => {
+  try {
+    const user = await UserCollection.find({ _id: req.body.userId }).populate(
+      "notification.userId",
+      { username: 1, name: 1, _id: 1, ProfileImg: 1 }
+    );
 
- try {
-  const user=await UserCollection.find({_id:req.body.userId }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 })
+    if (user) {
+      await UserCollection.updateOne(
+        { _id: req.body.userId },
+        {
+          $set: {
+            read: false,
+          },
+        }
+      );
 
-  if(user){
-   await UserCollection.updateOne({ _id:req.body.userId},{$set:{
-      read:false,
-    }})
-   
-    res.status(200).send({ Status: true,user:user[0]?.notification });
-  }else{
-    res.status(200).send({ Status: false });
+      res.status(200).send({ Status: true, user: user[0]?.notification });
+    } else {
+      res.status(200).send({ Status: false });
+    }
+  } catch (error) {}
+};
 
-  }
- } catch (error) {
-  
- }
+export const suggestionUsers = async (req: Request, res: Response) => {
+  try {
+    const userId = req.body.userId;
+    const user = await UserCollection.findOne({ _id: userId });
+    if (!user) return;
+    const notFollowedUsers = await UserCollection.aggregate([
+      {
+        $match: {
+          $and: [
+            { _id: { $nin: user.Following } },
+            { _id: { $ne: userId } }
+          ]
+        },
+      },
+      { $sample: { size: 6} },
+    ]);
 
+    console.log(notFollowedUsers);
 
-}
+    res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
+  } catch (error) {}
+};

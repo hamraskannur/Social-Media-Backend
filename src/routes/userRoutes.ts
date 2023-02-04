@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   postSignup,verify,userLogin,googleLogin,getMyPost,getUserData,getFriendsAccount,updateUserData,followUser,
   getAllRequest,acceptRequest,deleteRequests,getFollowingUser,getFollowersUser, changeToPrivate, searchUser,
-  getAllNotifications
+  getAllNotifications,suggestionUsers
 } from "../controllers/user";
 
 const router: Router = Router();
@@ -44,5 +44,7 @@ router.put('/changeToPrivate' , authMiddleware, changeToPrivate)
 router.post('/searchUser',authMiddleware,searchUser)
 
 router.get('/getAllNotifications',authMiddleware,getAllNotifications)
+
+router.get('/suggestionUsers', authMiddleware,suggestionUsers)
 
 module.exports = router;

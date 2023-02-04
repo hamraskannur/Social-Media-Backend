@@ -7,7 +7,7 @@ export const uploadVideo = async (req: Request, res: Response) => {
     const { imageLinks, description, userId } = req.body;
     const post = await new postCollection({
       userId,
-      img: imageLinks,
+      shorts: imageLinks,
       description,
     }).save();
 

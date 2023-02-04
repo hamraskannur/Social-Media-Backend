@@ -64,17 +64,19 @@ const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!post.likes.includes(userId)) {
             yield post.updateOne({ $push: { likes: userId } });
             console.log(post.userId);
-            yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
-                $push: {
-                    notification: {
-                        postId: post._id,
-                        userId: userId,
-                        text: "liked post",
-                        read: false
-                    }
-                },
-                $set: { read: true },
-            });
+            if (req.body.userId !== post.userId) {
+                yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
+                    $push: {
+                        notification: {
+                            postId: post._id,
+                            userId: userId,
+                            text: "liked post",
+                            read: false
+                        }
+                    },
+                    $set: { read: true },
+                });
+            }
             return res.json({ Message: "post liked successfully", success: true });
         }
         else {
@@ -102,17 +104,19 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             comment,
         });
         yield postComment.save();
-        yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
-            $push: {
-                notification: {
-                    postId: postId,
-                    userId: userId,
-                    text: " commented you post",
-                    read: false
-                }
-            },
-            $set: { read: true },
-        });
+        if (req.body.userId !== post.userId) {
+            yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
+                $push: {
+                    notification: {
+                        postId: postId,
+                        userId: userId,
+                        text: " commented you post",
+                        read: false
+                    }
+                },
+                $set: { read: true },
+            });
+        }
         yield CommentSchema_1.default.populate(postComment, {
             path: "userId",
             select: { username: 1 },
@@ -221,17 +225,19 @@ const likeMainComment = (req, res) => __awaiter(void 0, void 0, void 0, function
                 res.json({ message: "unLiked comment", success: true });
             }
             else {
-                yield userSchema_1.default.findOneAndUpdate({ _id: comment.userId }, {
-                    $push: {
-                        notification: {
-                            postId: comment.postId,
-                            userId: userId,
-                            text: "liked your comment",
-                            read: false
-                        }
-                    },
-                    $set: { read: true },
-                });
+                if (req.body.userId !== comment.userId) {
+                    yield userSchema_1.default.findOneAndUpdate({ _id: comment.userId }, {
+                        $push: {
+                            notification: {
+                                postId: comment.postId,
+                                userId: userId,
+                                text: "liked your comment",
+                                read: false
+                            }
+                        },
+                        $set: { read: true },
+                    });
+                }
                 yield comment.updateOne({ $push: { likes: userId } });
                 res.json({ message: "liked comment", success: true });
             }

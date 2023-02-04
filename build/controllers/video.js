@@ -19,7 +19,7 @@ const uploadVideo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const { imageLinks, description, userId } = req.body;
         const post = yield new photoSchema_1.default({
             userId,
-            img: imageLinks,
+            shorts: imageLinks,
             description,
         }).save();
         res.status(201).json({ status: true });

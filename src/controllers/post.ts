@@ -52,20 +52,22 @@ export const likePostReq = async (req: Request, res: Response) => {
     if (!post.likes.includes(userId)) {
       await post.updateOne({ $push: { likes: userId } });
       console.log(post.userId);
-      
-       await UserCollection.findOneAndUpdate(
-        { _id: post.userId},
-        {
-          $push: {
-            notification: { 
-              postId:post._id,
-              userId: userId,
-              text: "liked post",
-              read: false }
-          },
-          $set: { read: true },
-        }
-      );
+       if( req .body.userId !== post.userId){
+
+         await UserCollection.findOneAndUpdate(
+          { _id: post.userId},
+          {
+            $push: {
+              notification: { 
+                postId:post._id,
+                userId: userId,
+                text: "liked post",
+                read: false }
+            },
+            $set: { read: true },
+          }
+        );
+       }
       return res.json({ Message: "post liked successfully", success: true });
     } else {
       await post.updateOne({ $pull: { likes: userId } });
@@ -91,6 +93,8 @@ export const postComment = async (req: Request, res: Response) => {
       comment,
     });
     await postComment.save();
+    if( req.body.userId !== post.userId){
+
     await UserCollection.findOneAndUpdate(
       { _id: post.userId},
       {
@@ -104,6 +108,7 @@ export const postComment = async (req: Request, res: Response) => {
         $set: { read: true },
       }
     );
+    }
 
     await commentCollection.populate(postComment, {
       path: "userId",
@@ -214,6 +219,7 @@ export const likeMainComment = async (req: Request, res: Response) => {
         res.json({ message: "unLiked comment", success: true });
       } else {
       
+        if( req .body.userId !== comment.userId){
 
         await UserCollection.findOneAndUpdate(
           { _id:comment.userId},
@@ -228,6 +234,7 @@ export const likeMainComment = async (req: Request, res: Response) => {
             $set: { read: true },
           }
         );
+        }
         await comment.updateOne({ $push: { likes: userId } });
         res.json({ message: "liked comment", success: true });
       }

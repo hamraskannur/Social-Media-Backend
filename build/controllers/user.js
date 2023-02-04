@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllNotifications = exports.searchUser = exports.changeToPrivate = exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
+exports.suggestionUsers = exports.getAllNotifications = exports.searchUser = exports.changeToPrivate = exports.getFollowersUser = exports.getFollowingUser = exports.deleteRequests = exports.acceptRequest = exports.getAllRequest = exports.followUser = exports.updateUserData = exports.getUserData = exports.googleLogin = exports.getFriendsAccount = exports.getMyProfile = exports.getMyPost = exports.userLogin = exports.verify = exports.postSignup = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = require("bcrypt");
 const jws_1 = require("../utils/jws");
@@ -297,9 +297,9 @@ const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                             postId: userId,
                             userId: userId,
                             text: "start Followed you",
-                            read: false
-                        }
-                    }
+                            read: false,
+                        },
+                    },
                 });
                 yield user.updateOne({ $push: { Followers: mainUser === null || mainUser === void 0 ? void 0 : mainUser._id } });
                 yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $push: { Following: user._id } }));
@@ -392,10 +392,10 @@ const acceptRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 $push: {
                     notification: {
                         userId: userId,
-                        text: "start accepted you request",
-                        read: false
-                    }
-                }
+                        text: " accepted you request",
+                        read: false,
+                    },
+                },
             });
             yield user.updateOne({ $pull: { Requests: acceptId } });
             yield user.updateOne({ $push: { Followers: acceptId } });
@@ -587,18 +587,42 @@ exports.searchUser = searchUser;
 const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _k;
     try {
-        const user = yield userSchema_1.default.find({ _id: req.body.userId }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 });
+        const user = yield userSchema_1.default.find({ _id: req.body.userId }).populate("notification.userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         if (user) {
-            yield userSchema_1.default.updateOne({ _id: req.body.userId }, { $set: {
+            yield userSchema_1.default.updateOne({ _id: req.body.userId }, {
+                $set: {
                     read: false,
-                } });
+                },
+            });
             res.status(200).send({ Status: true, user: (_k = user[0]) === null || _k === void 0 ? void 0 : _k.notification });
         }
         else {
             res.status(200).send({ Status: false });
         }
     }
-    catch (error) {
-    }
+    catch (error) { }
 });
 exports.getAllNotifications = getAllNotifications;
+const suggestionUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.body.userId;
+        const user = yield userSchema_1.default.findOne({ _id: userId });
+        if (!user)
+            return;
+        const notFollowedUsers = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    $and: [
+                        { _id: { $nin: user.Following } },
+                        { _id: { $ne: userId } }
+                    ]
+                },
+            },
+            { $sample: { size: 6 } },
+        ]);
+        console.log(notFollowedUsers);
+        res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
+    }
+    catch (error) { }
+});
+exports.suggestionUsers = suggestionUsers;
