@@ -5,6 +5,7 @@ const express_1 = require("express");
 const admin_1 = require("../controllers/admin");
 const user_1 = require("../controllers/user");
 const post_1 = require("../controllers/post");
+const video_1 = require("../controllers/video");
 const router = (0, express_1.Router)();
 const authMiddleware = require('../middleware/authMiddleware');
 router.post('/login', admin_1.adminLogin);
@@ -22,4 +23,6 @@ router.get('/getFollowingUser/:userId', authMiddleware, user_1.getFollowingUser)
 router.get('/getFollowersUser/:userId', authMiddleware, user_1.getFollowersUser);
 router.get('/getAllNotifications', authMiddleware, admin_1.getAllNotifications);
 router.get('/checkNewNotification', authMiddleware, admin_1.checkNewNotification);
+router.get('/getAllPost', authMiddleware, post_1.getAllPosts);
+router.get('/getAllVideo', authMiddleware, video_1.getAllVideo);
 module.exports = router;

@@ -14,4 +14,5 @@ router.get("/getAllPosts", authMiddleware, getAllVideo);
 
 router.get("/getUserAllShorts/:userId", authMiddleware, getUserAllShorts);
 
+
 module.exports = router;

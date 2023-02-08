@@ -38,7 +38,7 @@ exports.addPost = addPost;
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const AllPosts = yield photoSchema_1.default
-            .find({ img: { $exists: true } })
+            .find({ shorts: null })
             .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1, public: 1, Followers: 1 });
         res.status(201).json({ AllPosts });
     }

@@ -4,16 +4,17 @@ import messageCollection from "../models/messageSchema";
 
 export const createChat = async (req: Request, res: Response) => {
     try {
-      const chat = await chatCollection.find({
-        members: { $in: [req.body.senderId, req.body.receiverId] },
+      const chat = await chatCollection.findOne({
+        members:  [req.body.senderId, req.body.receiverId] ,
       });
+           
       if (!chat) {
         const newChat = new chatCollection({
           members: [req.body.senderId, req.body.receiverId],
         });
   
         const result = await newChat.save();
-        res.status(200).json(result);
+        return res.status(200).json(result);
       }
       res.status(200).json("ok");
     } catch (error) {

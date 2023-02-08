@@ -2,7 +2,8 @@
 import { Router } from 'express'
 import { adminLogin,getAllUser,changeStatus,getAllReportPost,blockPost, getAllNotifications, checkNewNotification } from '../controllers/admin'
 import { getFriendsAccount, getFollowingUser, getFollowersUser } from "../controllers/user";
-import { getUserAllPost, getComment, getReplayComment, getOnePost,getUserAllShorts, } from "../controllers/post";
+import { getUserAllPost, getComment, getReplayComment, getOnePost,getUserAllShorts,getAllPosts } from "../controllers/post";
+import { getAllVideo} from "../controllers/video";
 
 const router = Router() 
 const authMiddleware = require('../middleware/authMiddleware')
@@ -36,5 +37,9 @@ router.get('/getFollowersUser/:userId' , authMiddleware,getFollowersUser)
 router.get('/getAllNotifications' , authMiddleware,getAllNotifications)
 
 router.get('/checkNewNotification',authMiddleware,checkNewNotification)
+
+router.get('/getAllPost',authMiddleware,getAllPosts)
+
+router.get('/getAllVideo',authMiddleware,getAllVideo)
 
 module.exports = router

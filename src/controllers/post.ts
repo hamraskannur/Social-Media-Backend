@@ -25,7 +25,7 @@ export const addPost = async (req: Request, res: Response) => {
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const AllPosts = await postCollection
-      .find({ img: { $exists: true } })
+      .find({shorts:null})
       .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
     res.status(201).json({ AllPosts });
   } catch (error) {

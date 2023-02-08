@@ -17,15 +17,15 @@ const chatSchema_1 = __importDefault(require("../models/chatSchema"));
 const messageSchema_1 = __importDefault(require("../models/messageSchema"));
 const createChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const chat = yield chatSchema_1.default.find({
-            members: { $in: [req.body.senderId, req.body.receiverId] },
+        const chat = yield chatSchema_1.default.findOne({
+            members: [req.body.senderId, req.body.receiverId],
         });
         if (!chat) {
             const newChat = new chatSchema_1.default({
                 members: [req.body.senderId, req.body.receiverId],
             });
             const result = yield newChat.save();
-            res.status(200).json(result);
+            return res.status(200).json(result);
         }
         res.status(200).json("ok");
     }
