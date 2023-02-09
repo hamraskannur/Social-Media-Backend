@@ -21,7 +21,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE","HEAD"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
-    "Access-Control-Allow-Headers":[ "Authorization", "Content-Type"]
+
   })
 );
 
