@@ -16,24 +16,12 @@ const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/connects");
 app.use(express_1.default.json());
 app.use(cookieParser());
-app.use(
-  CORS({
+app.use(CORS({
     origin: [process.env.BASE_URL],
-    methods: ["GET", "POST", "PUT", "DELETE","HEAD"],
+    methods: ["GET", "POST", "PUT", "DELETE", "HEAD"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
-  })
-);
-// app.use(function (req, res, next) {
-//     // Website you wish to allow to connect
-//     res.setHeader('Access-Control-Allow-Origin', 'https://www.locomate.smartworlds.shop');
-//     // Request methods you wish to allow
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//     // Pass to next layer of middleware
-//     res.setHeader('Access-Control-Allow-Credentials', 'true');
-//     next();
-// });
+}));
 dbConnect;
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
