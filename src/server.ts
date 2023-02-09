@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 app.use(
   CORS({
-    origin: ["https://www.locomate.smartworlds.shop/"],
+    origin: ["https://www.locomate.smartworlds.shop"],
     methods: ["GET", "POST", "PUT", "DELETE","HEAD"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
