@@ -70,14 +70,14 @@ export const verify = async (req: Request, res: Response) => {
     const user = await UserCollection.findOne({ _id: req.params.id });
     Verify.message = "Invalid link";
 
-    if (user == null) return res.status(400).send({ Verify });
+    if (user == null) return res.status(200).send({ Verify });
     const Token = await token.findOne({
       userId: user._id,
       token: req.params.token,
     });
 
     Verify.message = "Invalid link";
-    if (token == null) return res.status(400).send({ Verify });
+    if (token == null) return res.status(200).send({ Verify });
 
     await UserCollection.updateOne(
       { _id: user._id },
@@ -618,11 +618,9 @@ export const suggestionUsers = async (req: Request, res: Response) => {
           ]
         },
       },
-      { $sample: { size: 6} },
+      { $sample: { size: 7} },
     ]);
-
-    console.log(notFollowedUsers);
-
+     
     res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
   } catch (error) {}
 };

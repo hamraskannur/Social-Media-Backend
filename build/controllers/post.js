@@ -63,8 +63,7 @@ const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         if (!post.likes.includes(userId)) {
             yield post.updateOne({ $push: { likes: userId } });
-            console.log(post.userId);
-            if (req.body.userId !== post.userId) {
+            if (req.body.userId != post.userId) {
                 yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
                     $push: {
                         notification: {
@@ -104,7 +103,7 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             comment,
         });
         yield postComment.save();
-        if (req.body.userId !== post.userId) {
+        if (req.body.userId != post.userId) {
             yield userSchema_1.default.findOneAndUpdate({ _id: post.userId }, {
                 $push: {
                     notification: {
@@ -225,7 +224,7 @@ const likeMainComment = (req, res) => __awaiter(void 0, void 0, void 0, function
                 res.json({ message: "unLiked comment", success: true });
             }
             else {
-                if (req.body.userId !== comment.userId) {
+                if (req.body.userId != comment.userId) {
                     yield userSchema_1.default.findOneAndUpdate({ _id: comment.userId }, {
                         $push: {
                             notification: {

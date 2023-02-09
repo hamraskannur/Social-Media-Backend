@@ -42,17 +42,18 @@ export const getOnePost = async (req: Request, res: Response) => {
 
 export const likePostReq = async (req: Request, res: Response) => {
   try {
+   
+
     const userId = req.body.userId;
     const postId = req.params.postId;
     const post = await postCollection.findById(postId);
-
+  
     if (!post) {
       return res.json({ Message: "post not fount", success: false });
     }
     if (!post.likes.includes(userId)) {
       await post.updateOne({ $push: { likes: userId } });
-      console.log(post.userId);
-       if( req .body.userId !== post.userId){
+       if( req.body.userId != post.userId){
 
          await UserCollection.findOneAndUpdate(
           { _id: post.userId},
@@ -79,6 +80,8 @@ export const likePostReq = async (req: Request, res: Response) => {
 };
 
 export const postComment = async (req: Request, res: Response) => {
+
+
   const comment = req.body.comment;
   const userId = req.body.userId;
   const postId = req.params.postId;
@@ -93,8 +96,7 @@ export const postComment = async (req: Request, res: Response) => {
       comment,
     });
     await postComment.save();
-    if( req.body.userId !== post.userId){
-
+    if( req.body.userId != post.userId){
     await UserCollection.findOneAndUpdate(
       { _id: post.userId},
       {
@@ -219,7 +221,7 @@ export const likeMainComment = async (req: Request, res: Response) => {
         res.json({ message: "unLiked comment", success: true });
       } else {
       
-        if( req .body.userId !== comment.userId){
+        if( req .body.userId != comment.userId){
 
         await UserCollection.findOneAndUpdate(
           { _id:comment.userId},

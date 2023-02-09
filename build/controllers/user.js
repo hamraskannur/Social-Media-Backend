@@ -75,14 +75,14 @@ const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield userSchema_1.default.findOne({ _id: req.params.id });
         Verify.message = "Invalid link";
         if (user == null)
-            return res.status(400).send({ Verify });
+            return res.status(200).send({ Verify });
         const Token = yield token_1.default.findOne({
             userId: user._id,
             token: req.params.token,
         });
         Verify.message = "Invalid link";
         if (token_1.default == null)
-            return res.status(400).send({ Verify });
+            return res.status(200).send({ Verify });
         yield userSchema_1.default.updateOne({ _id: user._id }, {
             $set: {
                 verified: true,
@@ -618,9 +618,8 @@ const suggestionUsers = (req, res) => __awaiter(void 0, void 0, void 0, function
                     ]
                 },
             },
-            { $sample: { size: 6 } },
+            { $sample: { size: 7 } },
         ]);
-        console.log(notFollowedUsers);
         res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
     }
     catch (error) { }

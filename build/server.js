@@ -7,34 +7,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const CORS = require("cors");
 const app = (0, express_1.default)();
-const io = require("socket.io")(8800, {
-    cors: {
-        origin: "http://localhost:3000",
-    },
-});
-let activeUser = [];
-io.on("connection", (socket) => {
-    socket.on("new-user-add", (newUserId) => {
-        if (!activeUser.some((user) => user.userId === newUserId)) {
-            activeUser.push({
-                userId: newUserId,
-                socketId: socket.id,
-            });
-        }
-        io.emit("get-user", activeUser);
-    });
-    socket.on("send-message", (data) => {
-        const { receiverId } = data;
-        const user = activeUser.find((user) => user.userId === receiverId);
-        if (user) {
-            io.to(user.socketId).emit("receive-message", data);
-        }
-    });
-    socket.on("disconnect", () => {
-        activeUser = activeUser.filter((user) => user.socketId !== socket.id);
-        io.emit("get-user", activeUser);
-    });
-});
 const adminRouter = require("./routes/adminRoutes");
 const userRouter = require("./routes/userRoutes");
 const postRouter = require("./routes/postRoutes");
@@ -45,7 +17,7 @@ const dbConnect = require("./config/connects");
 app.use(express_1.default.json());
 app.use(cookieParser());
 app.use(CORS({
-    origin: ["http://localhost:3000"],
+    origin: [process.env.BASE_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],

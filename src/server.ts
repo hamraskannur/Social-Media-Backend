@@ -3,36 +3,6 @@ import express, { Application } from "express";
 const CORS = require("cors");
 const app: Application = express();
 
-const io = require("socket.io")(8800, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
-let activeUser: any[] = [];
-
-io.on("connection", (socket: any) => {
-  socket.on("new-user-add", (newUserId: string) => { 
-    if (!activeUser.some((user) => user.userId === newUserId)) {
-      activeUser.push({
-        userId: newUserId,
-        socketId: socket.id,
-      });
-    }    
-    io.emit("get-user", activeUser);
-  });
-  socket.on("send-message", (data: any) => {
-    const { receiverId } = data;
-    const user = activeUser.find((user) => user.userId === receiverId);
-    if (user) {
-      io.to(user.socketId).emit("receive-message",data);
-    }
-  });
-  socket.on("disconnect", () => {
-    activeUser = activeUser.filter((user) => user.socketId !== socket.id);
-    io.emit("get-user", activeUser);
-  });
-});
-
 const adminRouter = require("./routes/adminRoutes");
 const userRouter = require("./routes/userRoutes");
 const postRouter =require("./routes/postRoutes")
@@ -47,7 +17,7 @@ app.use(cookieParser());
 
 app.use(
   CORS({
-    origin: ["http://localhost:3000"],
+    origin: [process.env.BASE_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
