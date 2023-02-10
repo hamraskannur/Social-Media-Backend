@@ -29,7 +29,6 @@ const postSchema:Schema=new Schema({
     },
     shorts:{
         type:String,
-        default:null
     },
     img: [{
         type: String,
