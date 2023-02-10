@@ -18,8 +18,8 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
         const transporter = nodemailer.createTransport({
             host: process.env.HOST,
             service: process.env.SERVICE,
-            port: 587,
-            secure: true,
+            // port: 587,
+            // secure: true,
             auth: {
                 user: process.env.USER,
                 pass: process.env.PASS
