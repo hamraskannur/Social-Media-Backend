@@ -7,4 +7,13 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.post("/uploadVideo", authMiddleware, video_1.uploadVideo);
 router.get("/getAllPosts", authMiddleware, video_1.getAllVideo);
 router.get("/getUserAllShorts/:userId", authMiddleware, video_1.getUserAllShorts);
+router.use(function (req, res, next) {
+    next(createError(404));
+});
+router.use(function (err, req, res, next) {
+    res.status(500).json(err);
+});
+function createError(arg0) {
+    throw new Error("Function not implemented.");
+}
 module.exports = router;

@@ -17,7 +17,8 @@ const dbConnect = require("./config/connects");
 app.use(express_1.default.json());
 app.use(cookieParser());
 app.use(CORS({
-    origin: ["https://www.locomate.smartworlds.shop"],
+    // origin: ["https://www.locomate.smartworlds.shop"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],

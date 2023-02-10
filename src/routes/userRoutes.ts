@@ -5,6 +5,7 @@ import {
   getAllRequest,acceptRequest,deleteRequests,getFollowingUser,getFollowersUser, changeToPrivate, searchUser,
   getAllNotifications,suggestionUsers
 } from "../controllers/user";
+import { Request, Response, NextFunction } from "express";
 
 const router: Router = Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -46,5 +47,18 @@ router.post('/searchUser',authMiddleware,searchUser)
 router.get('/getAllNotifications',authMiddleware,getAllNotifications)
 
 router.get('/suggestionUsers', authMiddleware,suggestionUsers)
+
+
+router.use(function (req, res, next) {
+  next(createError(404));
+});
+
+router.use(function (err:object, req:Request, res:Response, next:NextFunction) {
+  res.status(500).json(err);
+});
+
+function createError(arg0: number): any {
+  throw new Error("Function not implemented.");
+}
 
 module.exports = router;

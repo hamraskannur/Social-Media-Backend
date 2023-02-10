@@ -4,6 +4,7 @@ import { adminLogin,getAllUser,changeStatus,getAllReportPost,blockPost, getAllNo
 import { getFriendsAccount, getFollowingUser, getFollowersUser } from "../controllers/user";
 import { getUserAllPost, getComment, getReplayComment, getOnePost,getUserAllShorts,getAllPosts } from "../controllers/post";
 import { getAllVideo} from "../controllers/video";
+import { Request, Response, NextFunction } from "express";
 
 const router = Router() 
 const authMiddleware = require('../middleware/authMiddleware')
@@ -42,4 +43,19 @@ router.get('/getAllPost',authMiddleware,getAllPosts)
 
 router.get('/getAllVideo',authMiddleware,getAllVideo)
 
+
+router.use(function (req, res, next) {
+    next(createError(404));
+  });
+  
+  router.use(function (err:object, req:Request, res:Response, next:NextFunction) {
+    res.status(500).json(err);
+  });
+  
+  function createError(arg0: number): any {
+    throw new Error("Function not implemented.");
+  }
+  
 module.exports = router
+
+

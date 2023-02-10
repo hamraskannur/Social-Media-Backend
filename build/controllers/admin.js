@@ -20,7 +20,7 @@ const photoSchema_1 = __importDefault(require("../models/photoSchema"));
 const bcrypt = require("bcrypt");
 const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const userSignUpp = {
         Status: false,
@@ -51,21 +51,21 @@ const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.adminLogin = adminLogin;
-const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const Users = yield userSchema_1.default.find({ verified: true });
         res.send({ Users });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllUser = getAllUser;
-const changeStatus = (req, res) => {
+const changeStatus = (req, res, next) => {
     const { Status, userId } = req.params;
     try {
         void userSchema_1.default
@@ -79,11 +79,11 @@ const changeStatus = (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 };
 exports.changeStatus = changeStatus;
-const getAllReportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllReportPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allPost = yield ReportSchema_1.default.find()
             .populate("PostId")
@@ -91,11 +91,11 @@ const getAllReportPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(200).send({ Status: true, Posts: allPost });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllReportPost = getAllReportPost;
-const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const blockPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { postId, status } = req.body;
         yield photoSchema_1.default.findByIdAndUpdate({
@@ -108,11 +108,11 @@ const blockPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send({ Status: true });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.blockPost = blockPost;
-const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
         const admin = yield adminSchema_1.default.find({ username: "admin" }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 });
@@ -127,11 +127,11 @@ const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, func
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllNotifications = getAllNotifications;
-const checkNewNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const checkNewNotification = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const admin = yield adminSchema_1.default.findOne({ read: false });
         if (admin) {
@@ -142,6 +142,7 @@ const checkNewNotification = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
     }
     catch (error) {
+        next(error);
     }
 });
 exports.checkNewNotification = checkNewNotification;

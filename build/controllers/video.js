@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserAllShorts = exports.getAllVideo = exports.uploadVideo = void 0;
 const photoSchema_1 = __importDefault(require("../models/photoSchema"));
-const uploadVideo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadVideo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imageLinks, description, userId } = req.body;
         const post = yield new photoSchema_1.default({
@@ -25,24 +25,24 @@ const uploadVideo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(201).json({ status: true });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.uploadVideo = uploadVideo;
-const getAllVideo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllVideo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const AllPosts = yield photoSchema_1.default
-            .find({ shorts: { $exists: true } })
+            .find({ shorts: { $ne: null } })
             .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1, public: 1, Followers: 1 });
         console.log(AllPosts);
         res.status(201).json({ AllPosts });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllVideo = getAllVideo;
-const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserAllShorts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
@@ -55,7 +55,7 @@ const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getUserAllShorts = getUserAllShorts;

@@ -55,13 +55,11 @@ export const postSignup = async (
       res.status(201).json({ userSignup });
     }
   } catch (error) {
-    userSignup.message = "some thing is wong";
-    userSignup.Status = false;
-    res.json({ userSignup });
+    next(error)
   }
 };
 
-export const verify = async (req: Request, res: Response) => {
+export const verify = async (req: Request, res: Response,next: NextFunction) => {
   const Verify: { Status: boolean; message: string } = {
     Status: false,
     message: "",
@@ -92,13 +90,11 @@ export const verify = async (req: Request, res: Response) => {
     Verify.message = "email verified successfully";
     res.send(Verify);
   } catch (error) {
-    Verify.Status = false;
-    Verify.message = "Invalid link ";
-    res.status(400).send({ Verify });
+    next(error)
   }
 };
 
-export const userLogin = async (req: Request, res: Response) => {
+export const userLogin = async (req: Request, res: Response,next: NextFunction) => {
   const { email, password } = req.body;
   const userLogin: {
     Status: boolean;
@@ -149,21 +145,21 @@ export const userLogin = async (req: Request, res: Response) => {
       res.send({ message: "wrong Email", Status: false });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getMyPost = async (req: Request, res: Response) => {
+export const getMyPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const allPost = await postCollection.find({ userId });
     res.status(201).json({ status: true, allPost });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getMyProfile = async (req: Request, res: Response) => {
+export const getMyProfile = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const useData = await postCollection
@@ -172,21 +168,21 @@ export const getMyProfile = async (req: Request, res: Response) => {
 
     res.status(201).json({ useData });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getFriendsAccount = async (req: Request, res: Response) => {
+export const getFriendsAccount = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const FriendsAccount = await UserCollection.find({ _id: userId });
     res.status(201).json({ FriendsAccount });
   } catch (error) {
-    console.log(error);
-  }
+    next(error)
+    }
 };
 
-export const googleLogin = async (req: Request, res: Response) => {
+export const googleLogin = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const { email, name } = req.body;
 
@@ -206,11 +202,11 @@ export const googleLogin = async (req: Request, res: Response) => {
       res.status(200).send({ token: token, user: user[0], Status: true });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getUserData = async (req: Request, res: Response) => {
+export const getUserData = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const user = await UserCollection.find({ _id: userId });
@@ -220,11 +216,11 @@ export const getUserData = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const updateUserData = async (req: Request, res: Response) => {
+export const updateUserData = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const user = await UserCollection.find({ username: req.body.userName });
@@ -272,11 +268,11 @@ export const updateUserData = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const followUser = async (req: Request, res: Response) => {
+export const followUser = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const followUserId = req.body.followId;
@@ -330,11 +326,11 @@ export const followUser = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getAllRequest = async (req: Request, res: Response) => {
+export const getAllRequest = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
 
@@ -369,11 +365,11 @@ export const getAllRequest = async (req: Request, res: Response) => {
       success: false,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const acceptRequest = async (req: Request, res: Response) => {
+export const acceptRequest = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const acceptId = req.body.acceptId;
@@ -403,11 +399,11 @@ export const acceptRequest = async (req: Request, res: Response) => {
     }
     res.json({ message: "success accepted user ", success: true });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const deleteRequests = async (req: Request, res: Response) => {
+export const deleteRequests = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const deleteId = req.params.deleteId;
@@ -422,11 +418,11 @@ export const deleteRequests = async (req: Request, res: Response) => {
       res.json({ message: "something is wrong ", success: false });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getFollowingUser = async (req: Request, res: Response) => {
+export const getFollowingUser = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const user = await UserCollection.aggregate([
       {
@@ -474,11 +470,11 @@ export const getFollowingUser = async (req: Request, res: Response) => {
 
     res.json({ message: "successfully", user: user });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getFollowersUser = async (req: Request, res: Response) => {
+export const getFollowersUser = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     console.log(userId);
@@ -528,11 +524,11 @@ export const getFollowersUser = async (req: Request, res: Response) => {
 
     res.json({ message: "successfully", user: user });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const changeToPrivate = async (req: Request, res: Response) => {
+export const changeToPrivate = async (req: Request, res: Response,next: NextFunction) => {
   console.log(req.body);
   const userId = req.body.userId;
   UserCollection.updateOne(
@@ -563,7 +559,7 @@ export const changeToPrivate = async (req: Request, res: Response) => {
     }
   });
 };
-export const searchUser = async (req: Request, res: Response) => {
+export const searchUser = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const { searchData: searchExpression } = req.body;
 
@@ -576,11 +572,11 @@ export const searchUser = async (req: Request, res: Response) => {
       res.status(404).json({ noUsers: true });
     }
   } catch (error) {
-    res.status(500).json(error);
+    next(error)
   }
 };
 
-export const getAllNotifications = async (req: Request, res: Response) => {
+export const getAllNotifications = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const user = await UserCollection.find({ _id: req.body.userId }).populate(
       "notification.userId",
@@ -601,10 +597,12 @@ export const getAllNotifications = async (req: Request, res: Response) => {
     } else {
       res.status(200).send({ Status: false });
     }
-  } catch (error) {}
+  } catch (error) {
+    next(error)
+  }
 };
 
-export const suggestionUsers = async (req: Request, res: Response) => {
+export const suggestionUsers = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
     const user = await UserCollection.findOne({ _id: userId });
@@ -622,5 +620,7 @@ export const suggestionUsers = async (req: Request, res: Response) => {
     ]);
      
     res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
-  } catch (error) {}
+  } catch (error) {
+    next(error)
+  }
 };

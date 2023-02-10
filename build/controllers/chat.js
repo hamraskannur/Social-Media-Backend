@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMessages = exports.addMessage = exports.chatFind = exports.getChat = exports.createChat = void 0;
 const chatSchema_1 = __importDefault(require("../models/chatSchema"));
 const messageSchema_1 = __importDefault(require("../models/messageSchema"));
-const createChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createChat = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const chat = yield chatSchema_1.default.findOne({
             members: [req.body.senderId, req.body.receiverId],
@@ -30,12 +30,11 @@ const createChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json("ok");
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.createChat = createChat;
-const getChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getChat = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const chat = yield chatSchema_1.default.find({
             members: { $in: [req.params.userId] },
@@ -43,12 +42,11 @@ const getChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json(chat);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.getChat = getChat;
-const chatFind = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const chatFind = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const chat = yield chatSchema_1.default.findOne({
             members: { $all: [req.params.firstId, req.params.secondId] },
@@ -56,12 +54,11 @@ const chatFind = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json(chat);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.chatFind = chatFind;
-const addMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const addMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { chatId, senderId, text } = req.body;
     console.log(chatId);
     console.log(senderId);
@@ -76,19 +73,18 @@ const addMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json(result);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.addMessage = addMessage;
-const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { chatId } = req.params;
     try {
         const result = yield messageSchema_1.default.find({ chatId });
         res.status(200).json(result);
     }
     catch (error) {
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.getMessages = getMessages;

@@ -20,7 +20,7 @@ const ReplayComment_1 = __importDefault(require("../models/ReplayComment"));
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
-const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const addPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imageLinks, description, userId } = req.body;
         const post = yield new photoSchema_1.default({
@@ -31,11 +31,11 @@ const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(201).json({ status: true });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.addPost = addPost;
-const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllPosts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const AllPosts = yield photoSchema_1.default
             .find({ shorts: null })
@@ -43,17 +43,22 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(201).json({ AllPosts });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllPosts = getAllPosts;
-const getOnePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { postId } = req.params;
-    const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId");
-    res.status(201).json({ Post });
+const getOnePost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.params;
+        const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId");
+        res.status(201).json({ Post });
+    }
+    catch (error) {
+        next(error);
+    }
 });
 exports.getOnePost = getOnePost;
-const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const likePostReq = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const postId = req.params.postId;
@@ -84,11 +89,11 @@ const likePostReq = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.likePostReq = likePostReq;
-const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const postComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const comment = req.body.comment;
     const userId = req.body.userId;
     const postId = req.params.postId;
@@ -127,11 +132,11 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.postComment = postComment;
-const getComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const postId = req.params.postId;
         const comments = yield CommentSchema_1.default.aggregate([
@@ -190,15 +195,15 @@ const getComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getComment = getComment;
-const getUserAllPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserAllPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
-            .find({ userId: userId, img: { $exists: true } })
+            .find({ userId: userId, shorts: null })
             .populate("userId");
         res.json({
             message: "AllPosts fetched successfully",
@@ -207,11 +212,11 @@ const getUserAllPost = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getUserAllPost = getUserAllPost;
-const likeMainComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const likeMainComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { userId, commentId } = req.body;
     try {
@@ -243,11 +248,11 @@ const likeMainComment = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.likeMainComment = likeMainComment;
-const postReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const postReplayComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, commentId, newComment } = req.body;
     try {
         const postComment = new ReplayComment_1.default({
@@ -263,11 +268,11 @@ const postReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.postReplayComment = postReplayComment;
-const getReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getReplayComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = req.params.commentId;
     try {
         const comments = yield ReplayComment_1.default.aggregate([
@@ -322,11 +327,11 @@ const getReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.json({ message: "liked comment", comments: comments, success: true });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getReplayComment = getReplayComment;
-const likeReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const likeReplayComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const { userId, commentId } = req.body;
     try {
@@ -345,11 +350,11 @@ const likeReplayComment = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.likeReplayComment = likeReplayComment;
-const savePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const savePost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     try {
         const { postId, userId } = req.body;
@@ -373,11 +378,11 @@ const savePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.savePost = savePost;
-const getSavedPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSavedPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const result = yield userSchema_1.default.aggregate([
@@ -431,22 +436,22 @@ const getSavedPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(200).json(result);
     }
     catch (error) {
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.getSavedPost = getSavedPost;
-const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deletePost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const postId = req.params.postId;
     try {
         const response = yield photoSchema_1.default.findByIdAndDelete({ _id: postId });
         res.status(200).json({ success: true, message: "deleted post" });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.deletePost = deletePost;
-const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const editPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const postData = req.body;
         yield photoSchema_1.default.updateOne({ _id: req.body.postId }, {
@@ -462,7 +467,7 @@ const editPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.editPost = editPost;
@@ -512,7 +517,7 @@ const reportPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.reportPost = reportPost;
-const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserAllShorts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
@@ -525,7 +530,7 @@ const getUserAllShorts = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getUserAllShorts = getUserAllShorts;

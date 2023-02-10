@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import postCollection from "../models/photoSchema";
 import mongoose from "mongoose";
 
-export const uploadVideo = async (req: Request, res: Response) => {
+export const uploadVideo = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const { imageLinks, description, userId } = req.body;
     const post = await new postCollection({
@@ -13,11 +13,11 @@ export const uploadVideo = async (req: Request, res: Response) => {
 
     res.status(201).json({ status: true });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getAllVideo = async (req: Request, res: Response) => {
+export const getAllVideo = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const AllPosts = await postCollection
       .find({shorts:{$ne:null}})
@@ -26,12 +26,12 @@ export const getAllVideo = async (req: Request, res: Response) => {
       
     res.status(201).json({ AllPosts });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
 
-export const getUserAllShorts = async (req: Request, res: Response) => {
+export const getUserAllShorts = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
@@ -44,6 +44,6 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };

@@ -20,4 +20,13 @@ router.get('/getSavedPost/:userId', authMiddleware, post_1.getSavedPost);
 router.delete('/deletePost/:postId', authMiddleware, post_1.deletePost);
 router.put('/editPost', authMiddleware, post_1.editPost);
 router.put('/reportPost', authMiddleware, post_1.reportPost);
+router.use(function (req, res, next) {
+    next(createError(404));
+});
+router.use(function (err, req, res, next) {
+    res.status(500).json(err);
+});
+function createError(arg0) {
+    throw new Error("Function not implemented.");
+}
 module.exports = router;

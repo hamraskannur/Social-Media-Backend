@@ -7,7 +7,7 @@ import UserCollection from "../models/userSchema";
 import ReportSchema from "../models/ReportSchema";
 import adminSchema from "../models/adminSchema";
 
-export const addPost = async (req: Request, res: Response) => {
+export const addPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const { imageLinks, description, userId } = req.body;
     const post = await new postCollection({
@@ -18,29 +18,34 @@ export const addPost = async (req: Request, res: Response) => {
 
     res.status(201).json({ status: true });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getAllPosts = async (req: Request, res: Response) => {
+export const getAllPosts = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const AllPosts = await postCollection
       .find({shorts:null})
       .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
     res.status(201).json({ AllPosts });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getOnePost = async (req: Request, res: Response) => {
-  const { postId } = req.params;
+export const getOnePost = async (req: Request, res: Response,next: NextFunction) => {
+  try{
 
-  const Post = await postCollection.findOne({ _id: postId }).populate("userId");
-  res.status(201).json({ Post });
+    const { postId } = req.params;
+  
+    const Post = await postCollection.findOne({ _id: postId }).populate("userId");
+    res.status(201).json({ Post });
+  }catch(error) {
+    next(error)
+  }
 };
 
-export const likePostReq = async (req: Request, res: Response) => {
+export const likePostReq = async (req: Request, res: Response,next: NextFunction) => {
   try {
    
 
@@ -75,11 +80,11 @@ export const likePostReq = async (req: Request, res: Response) => {
       return res.json({ Message: "post liked successfully", success: true });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const postComment = async (req: Request, res: Response) => {
+export const postComment = async (req: Request, res: Response,next: NextFunction) => {
 
 
   const comment = req.body.comment;
@@ -123,11 +128,11 @@ export const postComment = async (req: Request, res: Response) => {
       comment: postComment,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getComment = async (req: Request, res: Response) => {
+export const getComment = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const postId = req.params.postId;
     const comments = await commentCollection.aggregate([
@@ -186,15 +191,15 @@ export const getComment = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getUserAllPost = async (req: Request, res: Response) => {
+export const getUserAllPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId, shorts:null })
+      .find({ userId: userId , shorts:null })
       .populate("userId");
 
     res.json({
@@ -203,11 +208,11 @@ export const getUserAllPost = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const likeMainComment = async (req: Request, res: Response) => {
+export const likeMainComment = async (req: Request, res: Response,next: NextFunction) => {
   const { userId, commentId } = req.body;
 
   try {
@@ -242,11 +247,11 @@ export const likeMainComment = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const postReplayComment = async (req: Request, res: Response) => {
+export const postReplayComment = async (req: Request, res: Response,next: NextFunction) => {
   const { userId, commentId, newComment } = req.body;
   try {
     const postComment = new ReplayComment({
@@ -262,11 +267,11 @@ export const postReplayComment = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getReplayComment = async (req: Request, res: Response) => {
+export const getReplayComment = async (req: Request, res: Response,next: NextFunction) => {
   const commentId = req.params.commentId;
   try {
     const comments = await ReplayComment.aggregate([
@@ -321,11 +326,11 @@ export const getReplayComment = async (req: Request, res: Response) => {
 
     res.json({ message: "liked comment", comments: comments, success: true });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const likeReplayComment = async (req: Request, res: Response) => {
+export const likeReplayComment = async (req: Request, res: Response,next: NextFunction) => {
   const { userId, commentId } = req.body;
 
   try {
@@ -343,11 +348,11 @@ export const likeReplayComment = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const savePost = async (req: Request, res: Response) => {
+export const savePost = async (req: Request, res: Response,next: NextFunction) => {
   console.log(req.body);
   try {
     const { postId, userId } = req.body;
@@ -368,11 +373,11 @@ export const savePost = async (req: Request, res: Response) => {
       res.json({ noUser: true });
     }
   } catch (error) {
-    res.status(500).json(error);
+    next(error)
   }
 };
 
-export const getSavedPost = async (req: Request, res: Response) => {
+export const getSavedPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const result = await UserCollection.aggregate([
@@ -426,21 +431,21 @@ export const getSavedPost = async (req: Request, res: Response) => {
 
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json(error);
+    next(error)
   }
 };
 
-export const deletePost = async (req: Request, res: Response) => {
+export const deletePost = async (req: Request, res: Response,next: NextFunction) => {
   const postId = req.params.postId;
   try {
     const response = await postCollection.findByIdAndDelete({ _id: postId });
     res.status(200).json({ success: true, message: "deleted post" });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const editPost = async (req: Request, res: Response) => {
+export const editPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const postData = req.body;
     await postCollection.updateOne(
@@ -458,65 +463,67 @@ export const editPost = async (req: Request, res: Response) => {
       message: "Edited post",
     });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
 export const reportPost = async (req: Request, res: Response) => {
-  const report = await ReportSchema.findOne({
-    PostId: new mongoose.Types.ObjectId(req.body.postId),
-  });
 
-  if (report) {
-    report?.userText?.push({
-      userId: new mongoose.Types.ObjectId(req.body.userId),
-      text: req.body.newDescription,
+    const report = await ReportSchema.findOne({
+      PostId: new mongoose.Types.ObjectId(req.body.postId),
     });
-    await adminSchema.findOneAndUpdate(
-      { username: "admin" },
+    
+    if (report) {
+      report?.userText?.push({
+        userId: new mongoose.Types.ObjectId(req.body.userId),
+        text: req.body.newDescription,
+      });
+      await adminSchema.findOneAndUpdate(
+        { username: "admin" },
       {
         $push: {
           notification: { userId: req.body.userId, text: "reported post" },
         },
         $set: { read: true },
       }
-    );
-
-    report.save();
-    res.status(200).json({
-      success: true,
-      message: "report post",
-    });
-  } else {
-    await new ReportSchema({
-      PostId: req.body.postId,
-      userText: [
+      );
+      
+      report.save();
+      res.status(200).json({
+        success: true,
+        message: "report post",
+      });
+    } else {
+      await new ReportSchema({
+        PostId: req.body.postId,
+        userText: [
+          {
+            userId: new mongoose.Types.ObjectId(req.body.userId),
+            text: req.body.newDescription,
+          },
+        ],
+      }).save();
+      
+      await adminSchema.findOneAndUpdate(
+        { username: "admin" },
         {
-          userId: new mongoose.Types.ObjectId(req.body.userId),
-          text: req.body.newDescription,
-        },
-      ],
-    }).save();
-
-    await adminSchema.findOneAndUpdate(
-      { username: "admin" },
-      {
-        $push: {
-          notification: { userId: req.body.userId, text: "reported post" },
-        },
-        $set: { read: true },
+          $push: {
+            notification: { userId: req.body.userId, text: "reported post" },
+          },
+          $set: { read: true },
+        }
+        );
+        
+        res.status(200).json({
+          success: true,
+          newDescription: req.body.newDescription,
+          message: "report post",
+        });
+      
       }
-    );
-
-    res.status(200).json({
-      success: true,
-      newDescription: req.body.newDescription,
-      message: "report post",
-    });
-  }
-};
-
-export const getUserAllShorts = async (req: Request, res: Response) => {
+    };
+    
+export const getUserAllShorts = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
@@ -529,6 +536,5 @@ export const getUserAllShorts = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
-  }
+    next(error)  }
 };

@@ -60,13 +60,11 @@ const postSignup = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (error) {
-        userSignup.message = "some thing is wong";
-        userSignup.Status = false;
-        res.json({ userSignup });
+        next(error);
     }
 });
 exports.postSignup = postSignup;
-const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const Verify = {
         Status: false,
         message: "",
@@ -94,13 +92,11 @@ const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.send(Verify);
     }
     catch (error) {
-        Verify.Status = false;
-        Verify.message = "Invalid link ";
-        res.status(400).send({ Verify });
+        next(error);
     }
 });
 exports.verify = verify;
-const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     const { email, password } = req.body;
     const userLogin = {
@@ -147,22 +143,22 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.userLogin = userLogin;
-const getMyPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const allPost = yield photoSchema_1.default.find({ userId });
         res.status(201).json({ status: true, allPost });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getMyPost = getMyPost;
-const getMyProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const useData = yield photoSchema_1.default
@@ -171,22 +167,22 @@ const getMyProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(201).json({ useData });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getMyProfile = getMyProfile;
-const getFriendsAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getFriendsAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         const FriendsAccount = yield userSchema_1.default.find({ _id: userId });
         res.status(201).json({ FriendsAccount });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getFriendsAccount = getFriendsAccount;
-const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const googleLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, name } = req.body;
         const user = yield userSchema_1.default.find({ email });
@@ -205,11 +201,11 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.googleLogin = googleLogin;
-const getUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const user = yield userSchema_1.default.find({ _id: userId });
@@ -220,11 +216,11 @@ const getUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getUserData = getUserData;
-const updateUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
     try {
         const userId = req.body.userId;
@@ -274,11 +270,11 @@ const updateUserData = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.updateUserData = updateUserData;
-const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const followUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _e, _f, _g;
     try {
         const userId = req.body.userId;
@@ -333,11 +329,11 @@ const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.followUser = followUser;
-const getAllRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const Request = yield userSchema_1.default.aggregate([
@@ -372,11 +368,11 @@ const getAllRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getAllRequest = getAllRequest;
-const acceptRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const acceptRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _h;
     try {
         const userId = req.body.userId;
@@ -404,11 +400,11 @@ const acceptRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.json({ message: "success accepted user ", success: true });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.acceptRequest = acceptRequest;
-const deleteRequests = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteRequests = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _j;
     try {
         const userId = req.body.userId;
@@ -425,11 +421,11 @@ const deleteRequests = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.deleteRequests = deleteRequests;
-const getFollowingUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getFollowingUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield userSchema_1.default.aggregate([
             {
@@ -477,11 +473,11 @@ const getFollowingUser = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.json({ message: "successfully", user: user });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getFollowingUser = getFollowingUser;
-const getFollowersUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getFollowersUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
         console.log(userId);
@@ -531,11 +527,11 @@ const getFollowersUser = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.json({ message: "successfully", user: user });
     }
     catch (error) {
-        console.log(error);
+        next(error);
     }
 });
 exports.getFollowersUser = getFollowersUser;
-const changeToPrivate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const changeToPrivate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     const userId = req.body.userId;
     userSchema_1.default.updateOne({ _id: userId }, {
@@ -566,7 +562,7 @@ const changeToPrivate = (req, res) => __awaiter(void 0, void 0, void 0, function
     });
 });
 exports.changeToPrivate = changeToPrivate;
-const searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const searchUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { searchData: searchExpression } = req.body;
         const searchData = yield userSchema_1.default.find({
@@ -580,11 +576,11 @@ const searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        res.status(500).json(error);
+        next(error);
     }
 });
 exports.searchUser = searchUser;
-const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _k;
     try {
         const user = yield userSchema_1.default.find({ _id: req.body.userId }).populate("notification.userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
@@ -600,10 +596,12 @@ const getAllNotifications = (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(200).send({ Status: false });
         }
     }
-    catch (error) { }
+    catch (error) {
+        next(error);
+    }
 });
 exports.getAllNotifications = getAllNotifications;
-const suggestionUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const suggestionUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
         const user = yield userSchema_1.default.findOne({ _id: userId });
@@ -622,6 +620,8 @@ const suggestionUsers = (req, res) => __awaiter(void 0, void 0, void 0, function
         ]);
         res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
     }
-    catch (error) { }
+    catch (error) {
+        next(error);
+    }
 });
 exports.suggestionUsers = suggestionUsers;

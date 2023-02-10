@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { generateToken } from "../utils/jws";
 import userCollection from "../models/userSchema";
 import adminSchema from "../models/adminSchema";
@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 import ReportSchema from "../models/ReportSchema";
 import mongoose from "mongoose";
 
-export const adminLogin = async (req: Request, res: Response) => {
+export const adminLogin = async (req: Request, res: Response,next:NextFunction) => {
   const userSignUpp: { Status: boolean; message: string; token: string } = {
     Status: false,
     message: "",
@@ -42,18 +42,18 @@ export const adminLogin = async (req: Request, res: Response) => {
       res.send({ userSignUpp });
     }
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
-export const getAllUser = async (req: Request, res: Response) => {
+export const getAllUser = async (req: Request, res: Response, next:NextFunction) => {
   try {
     const Users = await userCollection.find({ verified: true });
     res.send({ Users });
   } catch (error) {
-    console.log(error);
+ next(error)
   }
 };
-export const changeStatus = (req: Request, res: Response) => {
+export const changeStatus = (req: Request, res: Response,next: NextFunction) => {
   const { Status, userId } = req.params;
   try {
     void userCollection
@@ -69,10 +69,10 @@ export const changeStatus = (req: Request, res: Response) => {
         res.status(200).send({ Status: true });
       });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
-export const getAllReportPost = async (req: Request, res: Response) => {
+export const getAllReportPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const allPost = await ReportSchema.find()
       .populate("PostId")
@@ -80,11 +80,11 @@ export const getAllReportPost = async (req: Request, res: Response) => {
 
       res.status(200).send({ Status: true, Posts: allPost });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const blockPost = async (req: Request, res: Response) => {
+export const blockPost = async (req: Request, res: Response,next: NextFunction) => {
   try {    
     const {postId, status} =req.body
     
@@ -100,11 +100,11 @@ export const blockPost = async (req: Request, res: Response) => {
     );
     res.status(200).send({ Status: true });
   } catch (error) {
-    console.log(error);
+    next(error)
   }
 };
 
-export const getAllNotifications = async (req: Request, res: Response) => {
+export const getAllNotifications = async (req: Request, res: Response,next: NextFunction) => {
   try{
      
     const admin=await adminSchema.find({username:"admin"}).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 })
@@ -119,12 +119,12 @@ export const getAllNotifications = async (req: Request, res: Response) => {
 
     }
   }catch(error){
-    console.log(error);
+    next(error)
 
   }
 }
 
-export const checkNewNotification = async (req: Request, res: Response) => {
+export const checkNewNotification = async (req: Request, res: Response,next: NextFunction) => {
   try{
     const admin =await adminSchema.findOne({read:false})    
     if(admin){
@@ -134,6 +134,6 @@ export const checkNewNotification = async (req: Request, res: Response) => {
     }
     
   }catch(error) {
-
+    next(error)
   }
 }
