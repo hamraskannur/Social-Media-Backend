@@ -20,7 +20,7 @@ export const uploadVideo = async (req: Request, res: Response) => {
 export const getAllVideo = async (req: Request, res: Response) => {
   try {
     const AllPosts = await postCollection
-      .find({shorts:{$exists:true}})
+      .find({shorts:{$ne:null}})
       .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
       console.log(AllPosts);
       
