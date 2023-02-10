@@ -24,8 +24,9 @@ router.use(function (req, res, next) {
     res.status(500).json(err);
   });
   
+  
+module.exports = router
+  
   function createError(arg0: number): any {
     throw new Error("Function not implemented.");
   }
-
-module.exports = router

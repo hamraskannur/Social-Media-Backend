@@ -24,13 +24,13 @@ router.put('/changeToPrivate', authMiddleware, user_1.changeToPrivate);
 router.post('/searchUser', authMiddleware, user_1.searchUser);
 router.get('/getAllNotifications', authMiddleware, user_1.getAllNotifications);
 router.get('/suggestionUsers', authMiddleware, user_1.suggestionUsers);
-router.use(function (req, res, next) {
-    next(createError(404));
-});
-router.use(function (err, req, res, next) {
-    res.status(500).json(err);
-});
-function createError(arg0) {
-    throw new Error("Function not implemented.");
-}
+// router.use(function (req, res, next) {
+//   next(createError(404));
+// });
+// router.use(function (err:object, req:Request, res:Response, next:NextFunction) {
+//   res.status(500).json(err);
+// });
 module.exports = router;
+// function createError(arg0: number): any {
+//   throw new Error("Function not implemented.");
+// }

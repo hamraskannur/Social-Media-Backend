@@ -13,7 +13,7 @@ router.use(function (req, res, next) {
 router.use(function (err, req, res, next) {
     res.status(500).json(err);
 });
+module.exports = router;
 function createError(arg0) {
     throw new Error("Function not implemented.");
 }
-module.exports = router;

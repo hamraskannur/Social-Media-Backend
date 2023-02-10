@@ -40,10 +40,10 @@ const getAllPosts = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         const AllPosts = yield photoSchema_1.default
             .find({ shorts: null })
             .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1, public: 1, Followers: 1 });
-        console.log(AllPosts);
         res.status(201).json({ AllPosts });
     }
     catch (error) {
+        console.log(error);
         next(error);
     }
 });

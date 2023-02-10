@@ -29,6 +29,8 @@ export const getAllPosts = async (req: Request, res: Response,next: NextFunction
       .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
     res.status(201).json({ AllPosts });
   } catch (error) {
+    console.log(error);
+    
     next(error)
   }
 };
