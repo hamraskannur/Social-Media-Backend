@@ -194,7 +194,7 @@ export const getUserAllPost = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId, img: { $exists: true } })
+      .find({ userId: userId, shorts:null })
       .populate("userId");
 
     res.json({
