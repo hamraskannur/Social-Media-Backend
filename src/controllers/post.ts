@@ -1,4 +1,4 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request,  Response } from "express";
 import mongoose from "mongoose";
 import postCollection from "../models/photoSchema";
 import commentCollection from "../models/CommentSchema";
