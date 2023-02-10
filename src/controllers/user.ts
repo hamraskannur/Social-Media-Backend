@@ -612,11 +612,12 @@ export const suggestionUsers = async (req: Request, res: Response,next: NextFunc
         $match: {
           $and: [
             { _id: { $nin: user.Following } },
-            { _id: { $ne: userId } }
+            { _id: { $ne: userId } },
+            {verified:true}
           ]
         },
       },
-      { $sample: { size: 7} },
+      { $sample: { size: 5} },
     ]);
      
     res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });

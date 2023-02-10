@@ -612,11 +612,12 @@ const suggestionUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
                 $match: {
                     $and: [
                         { _id: { $nin: user.Following } },
-                        { _id: { $ne: userId } }
+                        { _id: { $ne: userId } },
+                        { verified: true }
                     ]
                 },
             },
-            { $sample: { size: 7 } },
+            { $sample: { size: 5 } },
         ]);
         res.status(200).send({ Status: true, notFollowedUsers: notFollowedUsers });
     }

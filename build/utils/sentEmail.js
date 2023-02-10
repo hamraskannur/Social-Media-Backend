@@ -19,7 +19,7 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             host: process.env.HOST,
             service: process.env.SERVICE,
             port: 465,
-            secure: false,
+            secure: true,
             auth: {
                 user: process.env.USER,
                 pass: process.env.PASS
