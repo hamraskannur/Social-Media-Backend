@@ -7,16 +7,16 @@ export const sendEmail =  async (email: string, subject: string, text: string) =
     const transporter = nodemailer.createTransport({
       host: process.env.HOST,
       service: process.env.SERVICE,
-      port: 465,
+      port: 587,
       secure: true,
       auth: {
-        user: process.env.USER,
-        pass: process.env.PASS
+        user: "hamrask32@gmail.com",
+        pass: "zwplzntrbzhkceyg"
       }
     })
 
     await transporter.sendMail({
-      from: process.env.USER,
+      from: "hamrask32@gmail.com",
       to: email,
       subject: subject,
       text: text
