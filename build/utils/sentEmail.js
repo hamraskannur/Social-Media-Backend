@@ -19,14 +19,14 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             host: process.env.HOST,
             service: process.env.SERVICE,
             port: 465,
-            secure: true,
+            secure: false,
             auth: {
                 user: process.env.USER,
                 pass: process.env.PASS
             }
         });
         yield transporter.sendMail({
-            // from: process.env.USER,
+            from: process.env.USER,
             to: email,
             subject: subject,
             text: text
