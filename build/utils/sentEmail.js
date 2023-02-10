@@ -16,7 +16,7 @@ const nodemailer = require('nodemailer');
 const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
+            host: process.env.HOST,
             service: process.env.SERVICE,
             port: 465,
             secure: true,
@@ -26,7 +26,7 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             }
         });
         yield transporter.sendMail({
-            from: process.env.USER,
+            // from: process.env.USER,
             to: email,
             subject: subject,
             text: text
