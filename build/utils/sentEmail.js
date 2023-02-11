@@ -26,7 +26,7 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             }
         });
         yield transporter.sendMail({
-            from: "hamrask32@gmail.com",
+            from: process.env.USER,
             to: email,
             subject: subject,
             text: text
