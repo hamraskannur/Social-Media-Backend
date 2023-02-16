@@ -18,15 +18,15 @@ export const adminLogin = async (req: Request, res: Response,next:NextFunction) 
   try {
     const { email, password } = req.body;
 
-    const Admin = await adminSchema.find({ email });
+    const Admin = await adminSchema.findOne({ email });
 
-    if (Admin.length > 0) {
+    if (Admin) {
       const passwordVerify: boolean = await bcrypt.compare(
         password,
-        Admin[0]?.password
+        Admin?.password
       );
       if (passwordVerify) {
-        const token = await generateToken({ id: Admin[0]?._id.toString() });
+        const token = await generateToken({ id: Admin?._id.toString() });
         userSignUpp.Status = true;
         userSignUpp.token = token;
 
@@ -47,7 +47,7 @@ export const adminLogin = async (req: Request, res: Response,next:NextFunction) 
 };
 export const getAllUser = async (req: Request, res: Response, next:NextFunction) => {
   try {
-    const Users = await userCollection.find({ verified: true });
+    const Users = await userCollection.find({ verified: true }).select('-password');    
     res.send({ Users });
   } catch (error) {
  next(error)
@@ -76,8 +76,7 @@ export const getAllReportPost = async (req: Request, res: Response, next: NextFu
   try {
     const allPost = await ReportSchema.find()
       .populate("PostId")
-      .populate("userText.userId")
-
+      .populate("userText.userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 })      
       res.status(200).send({ Status: true, Posts: allPost });
   } catch (error) {
     next(error)

@@ -60,9 +60,6 @@ const chatFind = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.chatFind = chatFind;
 const addMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { chatId, senderId, text } = req.body;
-    console.log(chatId);
-    console.log(senderId);
-    console.log(text);
     const message = new messageSchema_1.default({
         chatId,
         senderId,

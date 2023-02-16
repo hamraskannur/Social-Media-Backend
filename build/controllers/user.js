@@ -163,7 +163,7 @@ const getMyProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const userId = req.body.userId;
         const useData = yield photoSchema_1.default
             .find({ userId: userId })
-            .populate("userId");
+            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.status(201).json({ useData });
     }
     catch (error) {
@@ -174,7 +174,7 @@ exports.getMyProfile = getMyProfile;
 const getFriendsAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        const FriendsAccount = yield userSchema_1.default.find({ _id: userId });
+        const FriendsAccount = yield userSchema_1.default.find({ _id: userId }).select('-password');
         res.status(201).json({ FriendsAccount });
     }
     catch (error) {
@@ -208,7 +208,7 @@ exports.googleLogin = googleLogin;
 const getUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.body.userId;
-        const user = yield userSchema_1.default.find({ _id: userId });
+        const user = yield userSchema_1.default.findById(userId).select('-password');
         return res.json({
             message: "comments fetched successfully",
             user: user,
@@ -480,7 +480,6 @@ exports.getFollowingUser = getFollowingUser;
 const getFollowersUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        console.log(userId);
         const user = yield userSchema_1.default.aggregate([
             {
                 $match: {
@@ -532,7 +531,6 @@ const getFollowersUser = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getFollowersUser = getFollowersUser;
 const changeToPrivate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
     const userId = req.body.userId;
     userSchema_1.default.updateOne({ _id: userId }, {
         $set: {

@@ -15,18 +15,20 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const User = process.env.USER;
+        const PASS = process.env.PASS;
         const transporter = nodemailer.createTransport({
             host: process.env.HOST,
             service: process.env.SERVICE,
             port: 587,
             secure: true,
             auth: {
-                user: "hamrask32@gmail.com",
-                pass: "zwplzntrbzhkceyg"
+                user: User,
+                pass: PASS
             }
         });
         yield transporter.sendMail({
-            from: "hamrask32@gmail.com",
+            from: User,
             to: email,
             subject: subject,
             text: text

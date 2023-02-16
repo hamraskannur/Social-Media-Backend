@@ -43,7 +43,6 @@ const getAllPosts = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         res.status(201).json({ AllPosts });
     }
     catch (error) {
-        console.log(error);
         next(error);
     }
 });
@@ -51,7 +50,7 @@ exports.getAllPosts = getAllPosts;
 const getOnePost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { postId } = req.params;
-        const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId");
+        const Post = yield photoSchema_1.default.findOne({ _id: postId }).populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.status(201).json({ Post });
     }
     catch (error) {
@@ -205,7 +204,7 @@ const getUserAllPost = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
             .find({ userId: userId, shorts: null })
-            .populate("userId");
+            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.json({
             message: "AllPosts fetched successfully",
             AllPosts: AllPosts,
@@ -454,7 +453,6 @@ const deletePost = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.deletePost = deletePost;
 const editPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const postData = req.body;
         yield photoSchema_1.default.updateOne({ _id: req.body.postId }, {
             $set: {
                 edit: true,
@@ -523,7 +521,7 @@ const getUserAllShorts = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
             .find({ userId: userId, shorts: { $exists: true } })
-            .populate("userId");
+            .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.json({
             message: "AllPosts fetched successfully",
             AllPosts: AllPosts,

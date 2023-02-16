@@ -28,19 +28,15 @@ export const getAllPosts = async (req: Request, res: Response,next: NextFunction
       .find({shorts:null})
       .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1,public:1,Followers:1 });
     res.status(201).json({ AllPosts });
-  } catch (error) {
-    console.log(error);
-    
+  } catch (error) {    
     next(error)
   }
 };
 
 export const getOnePost = async (req: Request, res: Response,next: NextFunction) => {
   try{
-
     const { postId } = req.params;
-  
-    const Post = await postCollection.findOne({ _id: postId }).populate("userId");
+    const Post = await postCollection.findOne({ _id: postId }).populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
     res.status(201).json({ Post });
   }catch(error) {
     next(error)
@@ -202,7 +198,7 @@ export const getUserAllPost = async (req: Request, res: Response,next: NextFunct
     const userId = req.params.userId;
     const AllPosts = await postCollection
       .find({ userId: userId , shorts:null })
-      .populate("userId");
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
 
     res.json({
       message: "AllPosts fetched successfully",
@@ -449,7 +445,6 @@ export const deletePost = async (req: Request, res: Response,next: NextFunction)
 
 export const editPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
-    const postData = req.body;
     await postCollection.updateOne(
       { _id: req.body.postId },
       {
@@ -530,7 +525,7 @@ export const getUserAllShorts = async (req: Request, res: Response,next: NextFun
     const userId = req.params.userId;
     const AllPosts = await postCollection
       .find({ userId: userId, shorts: { $exists: true } })
-      .populate("userId");
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
 
     res.json({
       message: "AllPosts fetched successfully",

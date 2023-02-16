@@ -164,7 +164,7 @@ export const getMyProfile = async (req: Request, res: Response,next: NextFunctio
     const userId = req.body.userId;
     const useData = await postCollection
       .find({ userId: userId })
-      .populate("userId");
+      .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
 
     res.status(201).json({ useData });
   } catch (error) {
@@ -175,7 +175,7 @@ export const getMyProfile = async (req: Request, res: Response,next: NextFunctio
 export const getFriendsAccount = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
-    const FriendsAccount = await UserCollection.find({ _id: userId });
+    const FriendsAccount = await UserCollection.find({ _id: userId }).select('-password');
     res.status(201).json({ FriendsAccount });
   } catch (error) {
     next(error)
@@ -209,7 +209,8 @@ export const googleLogin = async (req: Request, res: Response,next: NextFunction
 export const getUserData = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.body.userId;
-    const user = await UserCollection.find({ _id: userId });
+    const user = await UserCollection.findById(userId).select('-password');
+
     return res.json({
       message: "comments fetched successfully",
       user: user,
@@ -477,7 +478,6 @@ export const getFollowingUser = async (req: Request, res: Response,next: NextFun
 export const getFollowersUser = async (req: Request, res: Response,next: NextFunction) => {
   try {
     const userId = req.params.userId;
-    console.log(userId);
     const user = await UserCollection.aggregate([
       {
         $match: {
@@ -529,7 +529,6 @@ export const getFollowersUser = async (req: Request, res: Response,next: NextFun
 };
 
 export const changeToPrivate = async (req: Request, res: Response,next: NextFunction) => {
-  console.log(req.body);
   const userId = req.body.userId;
   UserCollection.updateOne(
     { _id: userId },

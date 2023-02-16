@@ -21,7 +21,6 @@ const bcrypt = require("bcrypt");
 const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     const userSignUpp = {
         Status: false,
         message: "",
@@ -29,11 +28,11 @@ const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     };
     try {
         const { email, password } = req.body;
-        const Admin = yield adminSchema_1.default.find({ email });
-        if (Admin.length > 0) {
-            const passwordVerify = yield bcrypt.compare(password, (_a = Admin[0]) === null || _a === void 0 ? void 0 : _a.password);
+        const Admin = yield adminSchema_1.default.findOne({ email });
+        if (Admin) {
+            const passwordVerify = yield bcrypt.compare(password, Admin === null || Admin === void 0 ? void 0 : Admin.password);
             if (passwordVerify) {
-                const token = yield (0, jws_1.generateToken)({ id: (_b = Admin[0]) === null || _b === void 0 ? void 0 : _b._id.toString() });
+                const token = yield (0, jws_1.generateToken)({ id: Admin === null || Admin === void 0 ? void 0 : Admin._id.toString() });
                 userSignUpp.Status = true;
                 userSignUpp.token = token;
                 res.status(200).send({ userSignUpp });
@@ -57,7 +56,7 @@ const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.adminLogin = adminLogin;
 const getAllUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const Users = yield userSchema_1.default.find({ verified: true });
+        const Users = yield userSchema_1.default.find({ verified: true }).select('-password');
         res.send({ Users });
     }
     catch (error) {
@@ -87,7 +86,7 @@ const getAllReportPost = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     try {
         const allPost = yield ReportSchema_1.default.find()
             .populate("PostId")
-            .populate("userText.userId");
+            .populate("userText.userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.status(200).send({ Status: true, Posts: allPost });
     }
     catch (error) {
@@ -113,14 +112,14 @@ const blockPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 });
 exports.blockPost = blockPost;
 const getAllNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
+    var _a;
     try {
         const admin = yield adminSchema_1.default.find({ username: "admin" }).populate('notification.userId', { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         if (admin) {
             yield adminSchema_1.default.updateOne({ username: "admin" }, { $set: {
                     read: false,
                 } });
-            res.status(200).send({ Status: true, admin: (_c = admin[0]) === null || _c === void 0 ? void 0 : _c.notification });
+            res.status(200).send({ Status: true, admin: (_a = admin[0]) === null || _a === void 0 ? void 0 : _a.notification });
         }
         else {
             res.status(200).send({ Status: false });

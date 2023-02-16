@@ -47,9 +47,6 @@ export const chatFind = async (req: Request, res: Response,next: NextFunction) =
 
   export const addMessage = async (req: Request, res: Response,next: NextFunction) => {
     const { chatId, senderId, text } = req.body;
-    console.log(chatId);
-    console.log(senderId);
-    console.log(text);
   
     const message = new messageCollection({
       chatId,
