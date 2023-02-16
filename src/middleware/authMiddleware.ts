@@ -20,9 +20,7 @@ module.exports = async (req: Request, res: Response, next: NextFunction) => {
       token,
       process.env.SECRET_TOKEN,
       (err: object | null, decoded: object | undefined) => {
-        if (err) {    
-          console.log(err);
-                
+        if (err) {                    
           return res.send({
             message: "auth failed",
             Status: false,
@@ -33,10 +31,9 @@ module.exports = async (req: Request, res: Response, next: NextFunction) => {
           next();
         }
       }
+      
     );
   } catch (error) {
-    console.log(error);
-    
     return res.status(401).send({
       message: "auth failed",
       success: false,
