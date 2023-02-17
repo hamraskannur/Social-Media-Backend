@@ -8,6 +8,7 @@ import {
   blockPost,
   getAllNotifications,
   checkNewNotification,
+  getUserChart
 } from "../controllers/admin";
 import {
   getFriendsAccount,
@@ -61,6 +62,8 @@ router.get("/checkNewNotification", authMiddleware, checkNewNotification);
 router.get("/getAllPost", authMiddleware, getAllPosts);
 
 router.get("/getAllVideo", authMiddleware, getAllVideo);
+
+router.get("/getChart", authMiddleware,getUserChart)
 
 router.use(function (req, res, next) {
   next(createError(404));

@@ -33,7 +33,7 @@ export const getUserAllShorts = async (req: Request, res: Response,next: NextFun
   try {
     const userId = req.params.userId;
     const AllPosts = await postCollection
-      .find({ userId: userId ,shorts:{$exists:true }})
+      .find({ userId: userId ,shorts:{$ne:null}})
       .populate("userId");
       
     res.json({

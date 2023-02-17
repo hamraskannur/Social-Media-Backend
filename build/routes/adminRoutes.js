@@ -25,6 +25,7 @@ router.get("/getAllNotifications", authMiddleware, admin_1.getAllNotifications);
 router.get("/checkNewNotification", authMiddleware, admin_1.checkNewNotification);
 router.get("/getAllPost", authMiddleware, post_1.getAllPosts);
 router.get("/getAllVideo", authMiddleware, video_1.getAllVideo);
+router.get("/getChart", authMiddleware, admin_1.getUserChart);
 router.use(function (req, res, next) {
     next(createError(404));
 });

@@ -118,6 +118,9 @@ const userSchema: Schema = new Schema({
   }]
 
 
+},
+{
+  timestamps: true,
 })
 
 export default model<IUser>('user', userSchema)

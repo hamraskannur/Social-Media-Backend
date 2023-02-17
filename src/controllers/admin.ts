@@ -136,3 +136,56 @@ export const checkNewNotification = async (req: Request, res: Response,next: Nex
     next(error)
   }
 }
+
+export const getUserChart = async (req: Request, res: Response,next: NextFunction) => {
+  try {
+    const userCount=await userCollection.find({verified:true}).count()
+    const postCount=await postCollection.find({shorts:null}).count()
+    const shortsCount=await postCollection.find({shorts:{$ne:null}}).count()
+
+    const userGraph = await userCollection.aggregate([
+      { 
+        $match: { 
+          verified:{
+          $eq:true
+          }
+        } 
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      },
+      {
+        $limit: 7
+    }
+    ])
+
+    const postGraph = await postCollection.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      },
+      {
+        $limit: 7
+    }
+    ])      
+
+    return  res.status(200).send({ status: true,userGraph,postGraph,userCount,postCount,shortsCount})
+  
+  } catch (error) {    
+    next(error)
+
+  }
+}

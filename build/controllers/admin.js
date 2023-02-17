@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkNewNotification = exports.getAllNotifications = exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
+exports.getUserChart = exports.checkNewNotification = exports.getAllNotifications = exports.blockPost = exports.getAllReportPost = exports.changeStatus = exports.getAllUser = exports.adminLogin = void 0;
 const jws_1 = require("../utils/jws");
 const userSchema_1 = __importDefault(require("../models/userSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
@@ -145,3 +145,50 @@ const checkNewNotification = (req, res, next) => __awaiter(void 0, void 0, void 
     }
 });
 exports.checkNewNotification = checkNewNotification;
+const getUserChart = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userCount = yield userSchema_1.default.find({ verified: true }).count();
+        const postCount = yield photoSchema_1.default.find({ shorts: null }).count();
+        const shortsCount = yield photoSchema_1.default.find({ shorts: { $ne: null } }).count();
+        const userGraph = yield userSchema_1.default.aggregate([
+            {
+                $match: {
+                    verified: {
+                        $eq: true
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            },
+            {
+                $limit: 7
+            }
+        ]);
+        const postGraph = yield photoSchema_1.default.aggregate([
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            },
+            {
+                $limit: 7
+            }
+        ]);
+        return res.status(200).send({ status: true, userGraph, postGraph, userCount, postCount, shortsCount });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getUserChart = getUserChart;
