@@ -107,9 +107,12 @@ const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         id: "",
     };
     try {
+        console.log(password);
         const findUser = yield userSchema_1.default.find({ email });
+        console.log(findUser);
         if (findUser.length !== 0) {
             if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
+                console.log(findUser[0].password);
                 const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
                 if (passwordVerify) {
                     const token = yield (0, jws_1.generateToken)({
@@ -143,6 +146,7 @@ const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
+        console.log(error);
         next(error);
     }
 });

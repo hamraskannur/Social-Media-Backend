@@ -110,9 +110,11 @@ export const userLogin = async (req: Request, res: Response,next: NextFunction) 
     id: "",
   };
   try {
-    const findUser = await UserCollection.find({ email });
+    console.log(password);
+    
+    const findUser = await UserCollection.find({ email });    
     if (findUser.length !== 0) {
-      if (findUser[0]?.verified === true) {
+      if (findUser[0]?.verified === true) {        
         const passwordVerify: boolean = await bcrypt.compare(
           password,
           findUser[0].password
@@ -145,6 +147,8 @@ export const userLogin = async (req: Request, res: Response,next: NextFunction) 
       res.send({ message: "wrong Email", Status: false });
     }
   } catch (error) {
+    console.log(error);
+    
     next(error)
   }
 };
