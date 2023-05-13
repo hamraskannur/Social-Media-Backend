@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from "express";
 const router: Router = Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
+
 router.post("/register", postSignup);
 
 router.get("/verifySignUp/:id/:token", verify);

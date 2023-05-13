@@ -22,6 +22,7 @@ const ReportSchema_1 = __importDefault(require("../models/ReportSchema"));
 const adminSchema_1 = __importDefault(require("../models/adminSchema"));
 const addPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("lpplpl");
         const { imageLinks, description, userId } = req.body;
         const post = yield new photoSchema_1.default({
             userId,

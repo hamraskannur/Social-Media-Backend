@@ -33,6 +33,7 @@ export const postSignup = async (
       userSignup.message = "Email Exist";
       res.json({ userSignup });
     } else {
+      
       const userName = await UserCollection.find({ username });
 
       if (userName.length > 0) {

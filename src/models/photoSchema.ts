@@ -12,7 +12,7 @@ export  interface AddPost extends Document{
 
 const postSchema:Schema=new Schema({
     userId: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId ,
         ref: "user",
         required: true,
       },

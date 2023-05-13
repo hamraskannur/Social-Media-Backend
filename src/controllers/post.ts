@@ -9,6 +9,8 @@ import adminSchema from "../models/adminSchema";
 
 export const addPost = async (req: Request, res: Response,next: NextFunction) => {
   try {
+    console.log("lpplpl");
+    
     const { imageLinks, description, userId } = req.body;
     const post = await new postCollection({
       userId,
@@ -18,6 +20,7 @@ export const addPost = async (req: Request, res: Response,next: NextFunction) =>
 
     res.status(201).json({ status: true });
   } catch (error) {
+    
     next(error)
   }
 };

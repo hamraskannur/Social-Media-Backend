@@ -18,7 +18,7 @@ app.use(express_1.default.json());
 app.use(cookieParser());
 app.use(CORS({
     // origin: ["http://localhost:3000"],
-    origin: ["https://www.locomate.smartworlds.shop"],
+    origin: ["https://www.locomate.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
     credentials: true,
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
@@ -31,6 +31,5 @@ app.use('/chat', chatRouter);
 app.use('/video', videoRouter);
 const port = 3008;
 app.listen(port, () => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`connected port ${port}`);
 });

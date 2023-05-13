@@ -23,12 +23,12 @@ const sendEmail = (email, subject, text) => __awaiter(void 0, void 0, void 0, fu
             port: 587,
             secure: true,
             auth: {
-                user: "hamrask32@gmail.com",
-                pass: "zwplzntrbzhkceyg"
+                user: User,
+                pass: PASS
             }
         });
         yield transporter.sendMail({
-            from: "hamrask32@gmail.com",
+            from: User,
             to: email,
             subject: subject,
             text: text
