@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(
   CORS({
     // origin: ["http://localhost:3000"],
-  origin: ["https://locomate.onrender.com"],
+  origin: "https://locomate.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE","HEAD", "OPTIONS"],
     credentials: true,  
     exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
