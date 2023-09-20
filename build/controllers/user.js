@@ -22,41 +22,37 @@ const token_1 = __importDefault(require("../models/token"));
 const nodemailer_1 = require("../utils/nodemailer");
 const saltRounds = 10;
 const postSignup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userSignup = {
-        Status: false,
-        message: "",
-    };
+    let status = false;
+    let message = '';
     try {
-        const { name, email, dob, phoneNo, password, username } = req.body;
+        const { name, email, password, username } = req.body;
         const user = yield userSchema_1.default.findOne({ email });
         if (user) {
             if (user.verified === false) {
                 (0, nodemailer_1.nodemailer)(user.id, email);
-                userSignup.message = "An Email resent to your account please verify";
-                userSignup.Status = true;
-                return res.status(201).json({ userSignup });
+                message = "An Email resent to your account please verify";
+                status = true;
+                return res.status(201).json({ message, status });
             }
-            userSignup.message = "Email Exist";
-            res.json({ userSignup });
+            message = "Email Exist";
+            res.json({ message, status });
         }
         else {
             const userName = yield userSchema_1.default.find({ username });
             if (userName.length > 0) {
-                userSignup.message = "userName Exist";
-                return res.json({ userSignup });
+                message = "userName Exist";
+                return res.json({ message, status });
             }
             const user = yield new userSchema_1.default({
                 username,
                 name,
                 email,
-                dob,
-                phoneNo,
                 password: yield bcrypt.hash(password, saltRounds),
             }).save();
             yield (0, nodemailer_1.nodemailer)(user.id, user.email);
-            userSignup.message = "An Email sent to your account please verify";
-            userSignup.Status = true;
-            res.status(201).json({ userSignup });
+            message = "An Email sent to your account please verify";
+            status = true;
+            res.status(201).json({ message, status });
         }
     }
     catch (error) {

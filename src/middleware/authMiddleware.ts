@@ -16,9 +16,7 @@ module.exports = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
     const [, token] = authHeader.split(" ");
-    jwt.verify(
-      token,
-      process.env.SECRET_TOKEN,
+    jwt.verify(token,process.env.SECRET_TOKEN,
       (err: object | null, decoded: object | undefined) => {
         if (err) {                    
           return res.send({

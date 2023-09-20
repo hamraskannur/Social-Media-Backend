@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import postCollection from "../models/photoSchema";
-import mongoose from "mongoose";
 
 export const uploadVideo = async (req: Request, res: Response,next: NextFunction) => {
   try {

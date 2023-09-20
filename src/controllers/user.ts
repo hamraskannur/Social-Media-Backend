@@ -14,46 +14,43 @@ export const postSignup = async (
   res: Response,
   next: NextFunction
 ) => {
-  const userSignup: { Status: boolean; message: string } = {
-    Status: false,
-    message: "",
-  };
+  let status: boolean=false
+  let message: string =''
+
   try {
-    const { name, email, dob, phoneNo, password, username } = req.body;
+    const { name, email, password, username } = req.body;
     const user = await UserCollection.findOne({ email });
 
     if (user) {
       if (user.verified === false) {
         nodemailer(user.id, email);
-        userSignup.message = "An Email resent to your account please verify";
-        userSignup.Status = true;
-        return res.status(201).json({ userSignup });
+        message = "An Email resent to your account please verify";
+        status = true;
+        return res.status(201).json({message,status});
       }
 
-      userSignup.message = "Email Exist";
-      res.json({ userSignup });
+      message = "Email Exist";
+      res.json({message,status});
     } else {
       
       const userName = await UserCollection.find({ username });
 
       if (userName.length > 0) {
-        userSignup.message = "userName Exist";
-        return res.json({ userSignup });
+        message = "userName Exist";
+        return res.json({message,status});
       }
 
       const user = await new UserCollection({
         username,
         name,
         email,
-        dob,
-        phoneNo,
         password: await bcrypt.hash(password, saltRounds),
       }).save();
 
       await nodemailer(user.id, user.email);
-      userSignup.message = "An Email sent to your account please verify";
-      userSignup.Status = true;
-      res.status(201).json({ userSignup });
+      message = "An Email sent to your account please verify";
+      status = true;
+      res.status(201).json({message,status});
     }
   } catch (error) {
     next(error)
