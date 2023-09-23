@@ -22,7 +22,7 @@ module.exports = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         const [, token] = authHeader.split(" ");
         jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
             if (err) {
-                return res.send({
+                return res.status(401).send({
                     message: "auth failed",
                     Status: false,
                 });

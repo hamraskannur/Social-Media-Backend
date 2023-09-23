@@ -19,7 +19,7 @@ module.exports = async (req: Request, res: Response, next: NextFunction) => {
     jwt.verify(token,process.env.SECRET_TOKEN,
       (err: object | null, decoded: object | undefined) => {
         if (err) {                    
-          return res.send({
+          return res.status(401).send({
             message: "auth failed",
             Status: false,
           });
@@ -29,7 +29,6 @@ module.exports = async (req: Request, res: Response, next: NextFunction) => {
           next();
         }
       }
-      
     );
   } catch (error) {
     return res.status(401).send({
