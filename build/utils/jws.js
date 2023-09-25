@@ -16,7 +16,7 @@ exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generateToken = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return jsonwebtoken_1.default.sign(payload, process.env.SECRET_TOKEN, {
-        expiresIn: '2m'
+        expiresIn: '2d'
     });
 });
 exports.generateToken = generateToken;

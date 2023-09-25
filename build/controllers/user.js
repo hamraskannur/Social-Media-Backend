@@ -93,29 +93,20 @@ const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.verify = verify;
 const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
     const { email, password } = req.body;
-    const userLogin = {
-        Status: false,
-        message: "",
-        user: [],
-        token: "",
-        id: "",
-    };
     try {
-        console.log(password);
-        const findUser = yield userSchema_1.default.find({ email });
-        if (findUser.length !== 0) {
-            if (((_a = findUser[0]) === null || _a === void 0 ? void 0 : _a.verified) === true) {
-                const passwordVerify = yield bcrypt.compare(password, findUser[0].password);
+        const findUser = yield userSchema_1.default.findOne({ email });
+        if (findUser) {
+            if (findUser.verified === true) {
+                const passwordVerify = yield bcrypt.compare(password, findUser.password);
                 if (passwordVerify) {
                     const token = yield (0, jws_1.generateToken)({
-                        id: (_b = findUser[0]) === null || _b === void 0 ? void 0 : _b._id.toString(),
+                        id: findUser._id.toString(),
                     });
-                    if (!((_c = findUser[0]) === null || _c === void 0 ? void 0 : _c.status)) {
+                    if (!findUser.status) {
                         res.status(200).send({
                             message: "",
-                            user: findUser[0],
+                            user: findUser,
                             Status: true,
                             token: token,
                         });
@@ -140,7 +131,6 @@ const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.log(error);
         next(error);
     }
 });
@@ -219,11 +209,11 @@ const getUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.getUserData = getUserData;
 const updateUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d;
+    var _a;
     try {
         const userId = req.body.userId;
         const user = yield userSchema_1.default.find({ username: req.body.userName });
-        if (user.length === 0 || ((_d = user[0]) === null || _d === void 0 ? void 0 : _d._id) === userId) {
+        if (user.length === 0 || ((_a = user[0]) === null || _a === void 0 ? void 0 : _a._id) === userId) {
             userSchema_1.default.updateOne({ _id: userId }, {
                 $set: {
                     username: req.body.username,
@@ -273,7 +263,7 @@ const updateUserData = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.updateUserData = updateUserData;
 const followUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e, _f, _g;
+    var _b, _c, _d;
     try {
         const userId = req.body.userId;
         const followUserId = req.body.followId;
@@ -284,7 +274,7 @@ const followUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (!mainUser)
             res.json({ message: "no user", success: false });
         if (user === null || user === void 0 ? void 0 : user.public) {
-            if (!((_e = user === null || user === void 0 ? void 0 : user.Followers) === null || _e === void 0 ? void 0 : _e.includes(userId))) {
+            if (!((_b = user === null || user === void 0 ? void 0 : user.Followers) === null || _b === void 0 ? void 0 : _b.includes(userId))) {
                 yield userSchema_1.default.findOneAndUpdate({ _id: user._id }, {
                     $push: {
                         notification: {
@@ -306,13 +296,13 @@ const followUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             }
         }
         else {
-            if ((_f = user === null || user === void 0 ? void 0 : user.Followers) === null || _f === void 0 ? void 0 : _f.includes(userId)) {
+            if ((_c = user === null || user === void 0 ? void 0 : user.Followers) === null || _c === void 0 ? void 0 : _c.includes(userId)) {
                 yield user.updateOne({ $pull: { Followers: userId } });
                 yield (mainUser === null || mainUser === void 0 ? void 0 : mainUser.updateOne({ $pull: { Following: userId } }));
                 res.json({ message: "successfully unFollowed user", success: true });
             }
             else {
-                if (!((_g = user === null || user === void 0 ? void 0 : user.Requests) === null || _g === void 0 ? void 0 : _g.includes(userId))) {
+                if (!((_d = user === null || user === void 0 ? void 0 : user.Requests) === null || _d === void 0 ? void 0 : _d.includes(userId))) {
                     yield (user === null || user === void 0 ? void 0 : user.updateOne({ $push: { Requests: userId } }));
                     res.json({ message: "successfully Requested user", success: true });
                 }
@@ -371,7 +361,7 @@ const getAllRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getAllRequest = getAllRequest;
 const acceptRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _h;
+    var _e;
     try {
         const userId = req.body.userId;
         const acceptId = req.body.acceptId;
@@ -381,7 +371,7 @@ const acceptRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             res.json({ message: "no user", success: false });
         if (!user)
             res.json({ message: "no user", success: false });
-        if ((_h = user === null || user === void 0 ? void 0 : user.Requests) === null || _h === void 0 ? void 0 : _h.includes(acceptId)) {
+        if ((_e = user === null || user === void 0 ? void 0 : user.Requests) === null || _e === void 0 ? void 0 : _e.includes(acceptId)) {
             yield userSchema_1.default.findOneAndUpdate({ _id: acceptId }, {
                 $push: {
                     notification: {
@@ -403,14 +393,14 @@ const acceptRequest = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.acceptRequest = acceptRequest;
 const deleteRequests = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _j;
+    var _f;
     try {
         const userId = req.body.userId;
         const deleteId = req.params.deleteId;
         const user = yield userSchema_1.default.findById(userId);
         if (!user)
             res.json({ message: "no user", success: false });
-        if ((_j = user === null || user === void 0 ? void 0 : user.Requests) === null || _j === void 0 ? void 0 : _j.includes(deleteId)) {
+        if ((_f = user === null || user === void 0 ? void 0 : user.Requests) === null || _f === void 0 ? void 0 : _f.includes(deleteId)) {
             yield user.updateOne({ $pull: { Requests: deleteId } });
             res.json({ message: "success delete request ", success: true });
         }
@@ -577,7 +567,7 @@ const searchUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.searchUser = searchUser;
 const getAllNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _k;
+    var _g;
     try {
         const user = yield userSchema_1.default.find({ _id: req.body.userId }).populate("notification.userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         if (user) {
@@ -586,7 +576,7 @@ const getAllNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0
                     read: false,
                 },
             });
-            res.status(200).send({ Status: true, user: (_k = user[0]) === null || _k === void 0 ? void 0 : _k.notification });
+            res.status(200).send({ Status: true, user: (_g = user[0]) === null || _g === void 0 ? void 0 : _g.notification });
         }
         else {
             res.status(200).send({ Status: false });

@@ -94,38 +94,25 @@ export const verify = async (req: Request, res: Response,next: NextFunction) => 
 
 export const userLogin = async (req: Request, res: Response,next: NextFunction) => {
   const { email, password } = req.body;
-  const userLogin: {
-    Status: boolean;
-    message: string;
-    user: [];
-    token: string;
-    id: string;
-  } = {
-    Status: false,
-    message: "",
-    user: [],
-    token: "",
-    id: "",
-  };
+  
   try {
-    console.log(password);
     
-    const findUser = await UserCollection.find({ email });    
-    if (findUser.length !== 0) {
-      if (findUser[0]?.verified === true) {        
+    const findUser = await UserCollection.findOne({ email });    
+    if (findUser) {
+      if (findUser.verified === true) {        
         const passwordVerify: boolean = await bcrypt.compare(
           password,
-          findUser[0].password
+          findUser.password
         );
         if (passwordVerify) {
           const token = await generateToken({
-            id: findUser[0]?._id.toString(),
+            id: findUser._id.toString(),
           });
 
-          if (!findUser[0]?.status) {
+          if (!findUser.status) {
             res.status(200).send({
               message: "",
-              user: findUser[0],
+              user: findUser,
               Status: true,
               token: token,
             });
@@ -144,9 +131,7 @@ export const userLogin = async (req: Request, res: Response,next: NextFunction) 
     } else {
       res.send({ message: "wrong Email", Status: false });
     }
-  } catch (error) {
-    console.log(error);
-    
+  } catch (error) {    
     next(error)
   }
 };
