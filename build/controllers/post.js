@@ -521,7 +521,7 @@ const getUserAllShorts = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     try {
         const userId = req.params.userId;
         const AllPosts = yield photoSchema_1.default
-            .find({ userId: userId, shorts: { $exists: true } })
+            .find({ userId: userId, shorts: { $ne: null } })
             .populate("userId", { username: 1, name: 1, _id: 1, ProfileImg: 1 });
         res.json({
             message: "AllPosts fetched successfully",

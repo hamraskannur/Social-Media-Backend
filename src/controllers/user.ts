@@ -230,7 +230,7 @@ export const updateUserData = async (req: Request, res: Response,next: NextFunct
           },
         }
       ).then((data) => {
-        if (data) {
+        if (data) {          
           if (data.modifiedCount > 0) {
             return res.json({
               message: "user data updated successfully",
@@ -349,7 +349,7 @@ export const getAllRequest = async (req: Request, res: Response,next: NextFuncti
     ]);
     res.json({
       message: "get All Request",
-      Request: Request,
+       Request,
       success: false,
     });
   } catch (error) {
